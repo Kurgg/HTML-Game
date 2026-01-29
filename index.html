@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wandwarden TD</title>
+  <title>Neon Loop: Hyper Pulse Arena</title>
   <style>
     :root {
       color-scheme: dark;
       font-family: "Inter", system-ui, sans-serif;
-      --bg: #0b0e16;
-      --panel: #141927;
-      --panel-2: #1d2436;
-      --accent: #7f7cff;
-      --accent-2: #31d0aa;
-      --danger: #ff5f7a;
+      --bg: #05060c;
+      --panel: #101626;
+      --panel-2: #171f34;
+      --accent: #6df3ff;
+      --accent-2: #ff7ad9;
       --warning: #f7c96b;
-      --text: #f8f9ff;
-      --muted: #9aa4c7;
+      --danger: #ff6b6b;
+      --text: #f6f8ff;
+      --muted: #8c95b8;
     }
 
     * {
@@ -25,7 +25,7 @@
 
     body {
       margin: 0;
-      background: radial-gradient(circle at top, #111736 0%, #07090f 70%);
+      background: radial-gradient(circle at top, #121b37 0%, #04050a 60%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -50,67 +50,13 @@
     .subtitle {
       color: var(--muted);
       font-size: 14px;
-    }
-
-    .hud {
-      display: grid;
-      grid-template-columns: 3fr 1.2fr;
-      gap: 16px;
-      padding: 0 32px 32px;
-      flex: 1;
-    }
-
-    .panel {
-      background: linear-gradient(145deg, rgba(20,25,39,0.95), rgba(13,15,25,0.95));
-      border: 1px solid rgba(128, 140, 190, 0.2);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-    }
-
-    #game-area {
-      position: relative;
-      overflow: hidden;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-      border-radius: 14px;
-      background: #05070d;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .column {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    .stat {
-      background: var(--panel-2);
-      padding: 8px 10px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .stat strong {
-      font-size: 16px;
+      max-width: 520px;
     }
 
     .controls {
       display: flex;
+      gap: 10px;
       flex-wrap: wrap;
-      gap: 8px;
     }
 
     button, select {
@@ -135,6 +81,61 @@
       transform: none;
     }
 
+    .hud {
+      display: grid;
+      grid-template-columns: 3fr 1.2fr;
+      gap: 16px;
+      padding: 0 32px 28px;
+      flex: 1;
+    }
+
+    .panel {
+      background: linear-gradient(145deg, rgba(16,22,38,0.95), rgba(7,10,18,0.95));
+      border: 1px solid rgba(128, 140, 190, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+
+    #game-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      background: #05070d;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      padding: 8px 10px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat strong {
+      font-size: 16px;
+    }
+
     .progress {
       height: 8px;
       border-radius: 999px;
@@ -155,13 +156,17 @@
       border-radius: 12px;
       padding: 12px;
       border: 1px solid rgba(255,255,255,0.08);
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .list {
       display: grid;
       gap: 6px;
       font-size: 12px;
-      max-height: 210px;
+      max-height: 190px;
       overflow: auto;
     }
 
@@ -178,27 +183,23 @@
       font-size: 12px;
     }
 
-    .rune-options {
+    .upgrade-buttons {
       display: grid;
       gap: 8px;
     }
 
-    .rune-options button {
-      text-align: left;
-    }
-
     .legend {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 6px;
       font-size: 12px;
     }
 
     .legend span {
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(127,124,255,0.2);
-      border: 1px solid rgba(127,124,255,0.4);
+      background: rgba(109,243,255,0.18);
+      border: 1px solid rgba(109,243,255,0.4);
     }
 
     .toast {
@@ -211,6 +212,7 @@
       border-radius: 10px;
       font-size: 12px;
       display: none;
+      max-width: 240px;
     }
 
     .toast.show {
@@ -233,918 +235,855 @@
 <body>
   <header>
     <div>
-      <h1>Wandwarden TD</h1>
-      <div class="subtitle">A polished, feature-packed tower defense spellbook. Guard the crystal, master new wands, and survive the arcane storms.</div>
+      <h1>Neon Loop: Hyper Pulse Arena</h1>
+      <div class="subtitle">
+        A hyperactive arena loop: dash, shoot, and chain streaks to unlock permanent meta upgrades. Every run remixes spawns, hazards, and reward cards for high replayability.
+      </div>
     </div>
     <div class="controls">
-      <button id="start-wave">Start Wave</button>
+      <button id="start-run">Start Run</button>
       <button id="toggle-pause">Pause</button>
       <button id="toggle-speed">Speed x1</button>
-      <button id="cast-nova">Cast Nova (50 mana)</button>
+      <button id="cast-burst">Pulse Burst (40 energy)</button>
     </div>
   </header>
 
   <section class="hud">
-    <div class="panel" id="game-area">
-      <canvas id="game" width="960" height="540"></canvas>
+    <div class="panel" id="game-wrap">
+      <canvas id="arena" width="960" height="540"></canvas>
       <div class="toast" id="toast"></div>
     </div>
     <div class="column">
       <div class="panel">
-        <h3>Command Center</h3>
+        <h3>Run HUD</h3>
         <div class="stat-grid">
           <div class="stat">
-            <span>Gold</span>
-            <strong id="gold">0</strong>
-          </div>
-          <div class="stat">
-            <span>Mana</span>
-            <strong id="mana">0</strong>
-            <div class="progress"><span id="mana-bar"></span></div>
-          </div>
-          <div class="stat">
-            <span>Crystal</span>
-            <strong id="base-hp">0</strong>
-            <div class="progress"><span id="base-bar"></span></div>
-          </div>
-          <div class="stat">
-            <span>Wave</span>
-            <strong id="wave">0</strong>
-          </div>
-          <div class="stat">
-            <span>Weather</span>
-            <strong id="weather">Clear</strong>
+            <span>Score</span>
+            <strong id="score">0</strong>
           </div>
           <div class="stat">
             <span>Combo</span>
             <strong id="combo">x0</strong>
           </div>
           <div class="stat">
-            <span>Time</span>
-            <strong id="daynight">Day</strong>
+            <span>Integrity</span>
+            <strong id="hp">0</strong>
+            <div class="progress"><span id="hp-bar"></span></div>
+          </div>
+          <div class="stat">
+            <span>Energy</span>
+            <strong id="energy">0</strong>
+            <div class="progress"><span id="energy-bar"></span></div>
+          </div>
+          <div class="stat">
+            <span>Loop</span>
+            <strong id="loop">0</strong>
+          </div>
+          <div class="stat">
+            <span>Difficulty</span>
+            <strong id="difficulty">0</strong>
+          </div>
+          <div class="stat">
+            <span>Best</span>
+            <strong id="best">0</strong>
+          </div>
+          <div class="stat">
+            <span>Meta Chips</span>
+            <strong id="chips">0</strong>
+          </div>
+          <div class="stat">
+            <span>Threat</span>
+            <strong id="threat">0</strong>
+          </div>
+          <div class="stat">
+            <span>Overdrive</span>
+            <strong id="overdrive">0</strong>
+            <div class="progress"><span id="overdrive-bar"></span></div>
           </div>
         </div>
       </div>
 
       <div class="panel">
-        <h3>Equip Wands</h3>
-        <select id="wand-select"></select>
-        <div class="card" id="wand-details"></div>
+        <h3>Loadout Cards</h3>
+        <div class="card" id="loadout">Pick a card between loops to evolve your build.</div>
+        <div class="upgrade-buttons" id="card-options"></div>
       </div>
 
       <div class="panel">
-        <h3>Build & Upgrade</h3>
-        <div class="controls">
-          <button id="build-arcane">Arcane Tower (60g)</button>
-          <button id="build-frost">Frost Tower (80g)</button>
-          <button id="build-flame">Flame Tower (90g)</button>
-          <button id="build-storm">Storm Tower (110g)</button>
-          <button id="sell-tower">Sell Selected</button>
-          <button id="upgrade-tower">Upgrade Selected</button>
+        <h3>Meta Lab (Persistent)</h3>
+        <div class="upgrade-buttons">
+          <button id="meta-shield">+20 Max Integrity (40 chips)</button>
+          <button id="meta-energy">+15 Max Energy (40 chips)</button>
+          <button id="meta-dash">Dash Cooldown -10% (50 chips)</button>
+          <button id="meta-fire">Fire Rate +10% (50 chips)</button>
         </div>
+      </div>
+
+      <div class="panel">
+        <h3>Active Tips</h3>
+        <div class="list" id="tips"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Active Buffs</h3>
+        <div class="list" id="buffs"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Control Legend</h3>
         <div class="legend">
-          <span>Click to place tower</span>
-          <span>Shift+Click to remove</span>
-          <span>Hover for stats</span>
+          <span>WASD / Arrow Keys: Move</span>
+          <span>Mouse: Aim</span>
+          <span>Click / Space: Fire</span>
+          <span>Shift: Dash</span>
+          <span>E: Pulse Burst</span>
         </div>
-      </div>
-
-      <div class="panel">
-        <h3>Rune Rewards</h3>
-        <div class="rune-options" id="rune-options"></div>
-      </div>
-
-      <div class="panel">
-        <h3>30 Arcane Ideas Implemented</h3>
-        <div class="list" id="feature-list"></div>
-      </div>
-
-      <div class="panel">
-        <h3>Bestiary Log</h3>
-        <div class="list" id="bestiary-list"></div>
       </div>
     </div>
   </section>
 
   <footer>
-    Tip: Wands unlock every few waves. Survive bosses to earn relics and rune upgrades.
+    Tip: Keep the combo alive by chaining kills within three seconds. Every loop offers different enemy mixes and reward cards.
   </footer>
 
   <script>
-    const canvas = document.getElementById("game");
+    const canvas = document.getElementById("arena");
     const ctx = canvas.getContext("2d");
 
-    const grid = { cols: 16, rows: 9, size: 60 };
-    const path = [
-      { x: 0, y: 4 },
-      { x: 4, y: 4 },
-      { x: 4, y: 1 },
-      { x: 10, y: 1 },
-      { x: 10, y: 7 },
-      { x: 15, y: 7 }
-    ];
-
-    const state = {
-      gold: 220,
-      mana: 100,
-      manaMax: 120,
-      baseHp: 300,
-      baseHpMax: 300,
-      wave: 0,
-      dayNight: "Day",
-      weather: "Clear",
-      running: false,
-      speed: 1,
-      enemies: [],
-      towers: [],
-      projectiles: [],
-      effects: [],
-      loot: [],
-      selectedTowerId: null,
-      hero: { x: 14 * grid.size + 30, y: 7 * grid.size + 30, range: 180, cooldown: 0 },
-      wand: null,
-      wandInventory: [],
-      unlockedWands: [],
-      runes: [],
-      relics: [],
-      combo: { count: 0, timer: 0 },
-      stats: {
-        kills: 0,
-        wavesCleared: 0,
-        bossesDefeated: 0,
-        goldEarned: 0
-      },
-      toasts: [],
-      weatherTimer: 0,
-      dayTimer: 0,
-      waveInProgress: false
+    const ui = {
+      score: document.getElementById("score"),
+      combo: document.getElementById("combo"),
+      hp: document.getElementById("hp"),
+      hpBar: document.getElementById("hp-bar"),
+      energy: document.getElementById("energy"),
+      energyBar: document.getElementById("energy-bar"),
+      loop: document.getElementById("loop"),
+      difficulty: document.getElementById("difficulty"),
+      best: document.getElementById("best"),
+      chips: document.getElementById("chips"),
+      threat: document.getElementById("threat"),
+      overdrive: document.getElementById("overdrive"),
+      overdriveBar: document.getElementById("overdrive-bar"),
+      loadout: document.getElementById("loadout"),
+      cardOptions: document.getElementById("card-options"),
+      tips: document.getElementById("tips"),
+      buffs: document.getElementById("buffs"),
+      toast: document.getElementById("toast"),
+      startRun: document.getElementById("start-run"),
+      pause: document.getElementById("toggle-pause"),
+      speed: document.getElementById("toggle-speed"),
+      burst: document.getElementById("cast-burst"),
+      metaShield: document.getElementById("meta-shield"),
+      metaEnergy: document.getElementById("meta-energy"),
+      metaDash: document.getElementById("meta-dash"),
+      metaFire: document.getElementById("meta-fire")
     };
 
-    const weatherStates = [
-      { name: "Clear", enemySpeed: 1, projectileSpeed: 1 },
-      { name: "Rain", enemySpeed: 0.9, projectileSpeed: 0.95 },
-      { name: "Storm", enemySpeed: 1.05, projectileSpeed: 1.1 },
-      { name: "Fog", enemySpeed: 0.85, projectileSpeed: 0.9 },
-      { name: "Arcane Drift", enemySpeed: 1, projectileSpeed: 1.2 }
+    const tips = [
+      "Dash through enemies to avoid stagger during invuln frames.",
+      "Pulse Burst clears hazard mines and refuels your combo timer.",
+      "Overdrive doubles fire rate briefly; save it for bosses.",
+      "Threat rises each loop and drives hazard intensity.",
+      "Chain kills within 3 seconds to ramp your score multiplier.",
+      "Magnet buff makes chip pickups drift in faster."
     ];
 
-    const wandCatalog = [
-      {
-        id: "starter",
-        name: "Starter Wand",
-        element: "Arcane",
-        description: "Reliable bolt, balanced range and crits.",
-        stats: { damage: 12, fireRate: 0.7, crit: 0.15, range: 190, chain: 0 }
-      },
-      {
-        id: "frost",
-        name: "Frostspire Wand",
-        element: "Frost",
-        description: "Slows targets, increases control.",
-        stats: { damage: 9, fireRate: 0.6, crit: 0.1, range: 210, slow: 0.35 }
-      },
-      {
-        id: "ember",
-        name: "Ember Lash Wand",
-        element: "Flame",
-        description: "Ignites for burn damage over time.",
-        stats: { damage: 15, fireRate: 0.55, crit: 0.12, range: 185, burn: 4 }
-      },
-      {
-        id: "storm",
-        name: "Stormcall Wand",
-        element: "Storm",
-        description: "Chains lightning between foes.",
-        stats: { damage: 11, fireRate: 0.8, crit: 0.18, range: 200, chain: 2 }
-      },
-      {
-        id: "void",
-        name: "Voidrift Wand",
-        element: "Void",
-        description: "High damage, risky recoil mana drain.",
-        stats: { damage: 20, fireRate: 0.45, crit: 0.25, range: 175, manaDrain: 2 }
-      }
-    ];
-
-    const towerCatalog = {
-      arcane: { name: "Arcane", damage: 8, fireRate: 1, range: 150, cost: 60, color: "#7f7cff" },
-      frost: { name: "Frost", damage: 6, fireRate: 0.9, range: 170, cost: 80, color: "#66d0ff", slow: 0.3 },
-      flame: { name: "Flame", damage: 11, fireRate: 0.7, range: 140, cost: 90, color: "#ff825c", burn: 3 },
-      storm: { name: "Storm", damage: 7, fireRate: 1.2, range: 160, cost: 110, color: "#f7c96b", chain: 1 }
-    };
-
-    const runeCatalog = [
-      { id: "manaflow", name: "Manaflow", text: "+20 max mana + faster regen", apply: () => { state.manaMax += 20; state.mana = Math.min(state.manaMax, state.mana + 20); } },
-      { id: "crystal", name: "Crystal Shield", text: "+40 base shield", apply: () => { state.baseHpMax += 40; state.baseHp += 40; } },
-      { id: "swift", name: "Swift Focus", text: "Hero attacks 15% faster", apply: () => { state.heroCooldownBonus = (state.heroCooldownBonus || 0) + 0.15; } },
-      { id: "golden", name: "Golden Sigil", text: "Earn 10% more gold", apply: () => { state.goldBonus = (state.goldBonus || 0) + 0.1; } },
-      { id: "turret", name: "Turret Forge", text: "Towers gain +10% damage", apply: () => { state.towerDamageBonus = (state.towerDamageBonus || 0) + 0.1; } },
-      { id: "arc", name: "Arc Relay", text: "Chain effects +1 bounce", apply: () => { state.chainBonus = (state.chainBonus || 0) + 1; } }
-    ];
-
-    const relicCatalog = [
-      { id: "phoenix", name: "Phoenix Crest", text: "Revive base once at 30% HP", apply: () => { state.reviveToken = true; } },
-      { id: "hourglass", name: "Eon Hourglass", text: "Slows enemies 10%", apply: () => { state.enemySpeedBonus = (state.enemySpeedBonus || 0) - 0.1; } },
-      { id: "thunder", name: "Thunder Ring", text: "Nova deals +50% damage", apply: () => { state.novaBonus = (state.novaBonus || 0) + 0.5; } }
-    ];
-
-    const features = [
-      "Multiple equipable wands with elemental identity",
-      "Wand unlock milestones across waves",
-      "Hero auto-casts with chosen wand",
-      "Upgradeable arcane towers",
-      "Grid-based placement with path blocking",
-      "Adaptive wave scaling",
-      "Boss waves with relic drops",
-      "Miniboss elites with treasure",
-      "Elemental burn, slow, and chain effects",
-      "Critical strikes & damage variance",
-      "Mana system with regen",
-      "Active Nova spell",
-      "Gold economy & build costs",
-      "Tower upgrades & sell-back",
-      "Rune reward choices between waves",
-      "Relic-based meta buffs",
-      "Day/night cycle with stat shifts",
-      "Dynamic weather affecting combat",
-      "Speed toggle for fast-forward",
-      "Pause/resume control",
-      "Crystal shield and regeneration",
-      "Combo meter for kill streaks",
-      "Synergy bonuses for adjacent towers",
-      "Floating loot pickups",
-      "Achievement badges",
-      "Bestiary log (hover cards)",
-      "Ambient lighting overlays",
-      "Path preview & build restrictions",
-      "Stylized UI with telemetry panels",
-      "Status effect icons"
+    const cardCatalog = [
+      { name: "Arc Coil", text: "Shots chain once to a nearby target.", apply: () => { state.chain += 1; } },
+      { name: "Flux Barrage", text: "+20% fire rate.", apply: () => { state.fireRate *= 1.2; } },
+      { name: "Overclock Shield", text: "Regenerate 2 integrity per loop.", apply: () => { state.loopRegen += 2; } },
+      { name: "Lumen Rounds", text: "Shots pierce 1 enemy.", apply: () => { state.pierce += 1; } },
+      { name: "Magnet Core", text: "Pickups pull from farther away.", apply: () => { state.pickupRange += 40; } },
+      { name: "Thermal Burst", text: "Pulse Burst deals +40% damage.", apply: () => { state.burstPower += 0.4; } }
     ];
 
     const enemyTypes = [
-      { id: "grunt", name: "Rune Grunt", hp: 50, speed: 45, bounty: 12, color: "#f5b26a" },
-      { id: "swift", name: "Blade Pixie", hp: 35, speed: 70, bounty: 10, color: "#82d2ff" },
-      { id: "tank", name: "Iron Golem", hp: 120, speed: 30, bounty: 24, color: "#a6a3c7" },
-      { id: "elite", name: "Spellwarden", hp: 160, speed: 40, bounty: 36, color: "#ff7bd6" },
-      { id: "boss", name: "Abyss Sentinel", hp: 520, speed: 28, bounty: 120, color: "#ff5f7a", boss: true }
+      { id: "drifter", name: "Drifter", hp: 22, speed: 70, color: "#6df3ff", score: 18 },
+      { id: "crusher", name: "Crusher", hp: 60, speed: 45, color: "#ff7ad9", score: 36 },
+      { id: "swarm", name: "Swarm", hp: 14, speed: 90, color: "#f7c96b", score: 14 },
+      { id: "phantom", name: "Phantom", hp: 40, speed: 80, color: "#8b8bff", score: 30 },
+      { id: "warden", name: "Warden", hp: 120, speed: 50, color: "#ff6b6b", score: 80, boss: true }
     ];
 
-    const ui = {
-      gold: document.getElementById("gold"),
-      mana: document.getElementById("mana"),
-      manaBar: document.getElementById("mana-bar"),
-      base: document.getElementById("base-hp"),
-      baseBar: document.getElementById("base-bar"),
-      wave: document.getElementById("wave"),
-      weather: document.getElementById("weather"),
-      daynight: document.getElementById("daynight"),
-      combo: document.getElementById("combo"),
-      startWave: document.getElementById("start-wave"),
-      pause: document.getElementById("toggle-pause"),
-      speed: document.getElementById("toggle-speed"),
-      nova: document.getElementById("cast-nova"),
-      wandSelect: document.getElementById("wand-select"),
-      wandDetails: document.getElementById("wand-details"),
-      runeOptions: document.getElementById("rune-options"),
-      featureList: document.getElementById("feature-list"),
-      bestiaryList: document.getElementById("bestiary-list"),
-      toast: document.getElementById("toast"),
-      buildButtons: {
-        arcane: document.getElementById("build-arcane"),
-        frost: document.getElementById("build-frost"),
-        flame: document.getElementById("build-flame"),
-        storm: document.getElementById("build-storm")
+    const state = {
+      running: false,
+      speed: 1,
+      score: 0,
+      best: Number(localStorage.getItem("neon-loop-best") || 0),
+      chips: Number(localStorage.getItem("neon-loop-chips") || 0),
+      loop: 0,
+      difficulty: 1,
+      threat: 1,
+      combo: { count: 0, timer: 0 },
+      player: {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 16,
+        speed: 220,
+        hp: 100,
+        maxHp: 100,
+        energy: 60,
+        maxEnergy: 60,
+        dashCooldown: 0,
+        dashTimer: 0
       },
-      sell: document.getElementById("sell-tower"),
-      upgrade: document.getElementById("upgrade-tower")
+      fireRate: 7,
+      chain: 0,
+      pierce: 0,
+      loopRegen: 0,
+      pickupRange: 120,
+      burstPower: 0,
+      overdriveTimer: 0,
+      shieldTimer: 0,
+      magnetTimer: 0,
+      bullets: [],
+      enemies: [],
+      pickups: [],
+      hazards: [],
+      particles: [],
+      keys: {},
+      mouse: { x: canvas.width / 2, y: canvas.height / 2, down: false },
+      lastTime: 0,
+      spawnTimer: 0,
+      loopTimer: 0,
+      ringTimer: 8,
+      mineTimer: 6,
+      fireTimer: 0
     };
-
-    function init() {
-      state.wandInventory = [wandCatalog[0]];
-      state.unlockedWands = [wandCatalog[0].id];
-      state.wand = wandCatalog[0];
-      renderWandOptions();
-      renderFeatures();
-      renderBestiary();
-      updateUI();
-      spawnRuneOptions();
-      requestAnimationFrame(loop);
-    }
-
-    function renderFeatures() {
-      ui.featureList.innerHTML = "";
-      features.forEach((feature) => {
-        const span = document.createElement("span");
-        span.textContent = feature;
-        ui.featureList.appendChild(span);
-      });
-    }
-
-    function renderBestiary() {
-      ui.bestiaryList.innerHTML = "";
-      enemyTypes.forEach((enemy) => {
-        const span = document.createElement("span");
-        span.textContent = `${enemy.name} — HP ${enemy.hp}, Speed ${enemy.speed}, Bounty ${enemy.bounty}`;
-        ui.bestiaryList.appendChild(span);
-      });
-    }
-
-    function renderWandOptions() {
-      ui.wandSelect.innerHTML = "";
-      state.wandInventory.forEach((wand) => {
-        const option = document.createElement("option");
-        option.value = wand.id;
-        option.textContent = `${wand.name} (${wand.element})`;
-        ui.wandSelect.appendChild(option);
-      });
-      ui.wandSelect.value = state.wand.id;
-      renderWandDetails();
-    }
-
-    function renderWandDetails() {
-      const wand = state.wand;
-      ui.wandDetails.innerHTML = `
-        <strong>${wand.name}</strong>
-        <p>${wand.description}</p>
-        <div class="list">
-          <span>Damage: ${wand.stats.damage}</span>
-          <span>Fire Rate: ${(1 / wand.stats.fireRate).toFixed(1)} shots/s</span>
-          <span>Range: ${wand.stats.range}px</span>
-          <span>Crit: ${(wand.stats.crit * 100).toFixed(0)}%</span>
-          ${wand.stats.slow ? `<span>Slow: ${(wand.stats.slow * 100).toFixed(0)}%</span>` : ""}
-          ${wand.stats.burn ? `<span>Burn: ${wand.stats.burn}/s</span>` : ""}
-          ${wand.stats.chain ? `<span>Chain: ${wand.stats.chain} bounces</span>` : ""}
-        </div>
-      `;
-    }
-
-    function updateUI() {
-      ui.gold.textContent = Math.floor(state.gold);
-      ui.mana.textContent = `${Math.floor(state.mana)}/${state.manaMax}`;
-      ui.manaBar.style.width = `${(state.mana / state.manaMax) * 100}%`;
-      ui.base.textContent = `${Math.floor(state.baseHp)}/${state.baseHpMax}`;
-      ui.baseBar.style.width = `${(state.baseHp / state.baseHpMax) * 100}%`;
-      ui.wave.textContent = state.wave;
-      ui.weather.textContent = state.weather;
-      ui.daynight.textContent = state.dayNight;
-      ui.combo.textContent = `x${state.combo.count}`;
-    }
 
     function showToast(message) {
       ui.toast.textContent = message;
       ui.toast.classList.add("show");
       clearTimeout(state.toastTimer);
-      state.toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 2400);
+      state.toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 2200);
     }
 
-    function spawnWave() {
-      if (state.waveInProgress) return;
-      state.wave += 1;
-      state.waveInProgress = true;
-      const count = 8 + state.wave * 2;
-      const isBossWave = state.wave % 5 === 0;
-      let enemyList = [];
-      for (let i = 0; i < count; i += 1) {
-        const roll = Math.random();
-        let type = enemyTypes[0];
-        if (roll > 0.85) type = enemyTypes[2];
-        if (roll > 0.9) type = enemyTypes[3];
-        if (roll > 0.95) type = enemyTypes[1];
-        enemyList.push(createEnemy(type, i * 80));
-      }
-      if (isBossWave) {
-        enemyList.push(createEnemy(enemyTypes[4], count * 85, true));
-        showToast("Boss wave! Relic drop possible.");
-      }
-      state.enemies.push(...enemyList);
-      unlockWandIfNeeded();
+    function updateUI() {
+      ui.score.textContent = Math.floor(state.score);
+      ui.combo.textContent = `x${state.combo.count}`;
+      ui.hp.textContent = `${Math.floor(state.player.hp)}/${state.player.maxHp}`;
+      ui.hpBar.style.width = `${(state.player.hp / state.player.maxHp) * 100}%`;
+      ui.energy.textContent = `${Math.floor(state.player.energy)}/${state.player.maxEnergy}`;
+      ui.energyBar.style.width = `${(state.player.energy / state.player.maxEnergy) * 100}%`;
+      ui.loop.textContent = state.loop;
+      ui.difficulty.textContent = state.difficulty.toFixed(1);
+      ui.best.textContent = state.best;
+      ui.chips.textContent = state.chips;
+      ui.threat.textContent = state.threat.toFixed(1);
+      ui.overdrive.textContent = state.overdriveTimer > 0 ? `${state.overdriveTimer.toFixed(1)}s` : "0";
+      ui.overdriveBar.style.width = `${Math.min(100, (state.overdriveTimer / 6) * 100)}%`;
+      renderBuffs();
     }
 
-    function createEnemy(type, delay, isBoss = false) {
-      const baseHp = type.hp * (1 + state.wave * 0.1);
-      return {
+    function renderTips() {
+      ui.tips.innerHTML = "";
+      tips.forEach((tip) => {
+        const span = document.createElement("span");
+        span.textContent = tip;
+        ui.tips.appendChild(span);
+      });
+    }
+
+    function renderBuffs() {
+      ui.buffs.innerHTML = "";
+      const buffs = [];
+      if (state.overdriveTimer > 0) buffs.push(`Overdrive ${state.overdriveTimer.toFixed(1)}s`);
+      if (state.shieldTimer > 0) buffs.push(`Shield ${state.shieldTimer.toFixed(1)}s`);
+      if (state.magnetTimer > 0) buffs.push(`Magnet ${state.magnetTimer.toFixed(1)}s`);
+      if (buffs.length === 0) buffs.push("No active buffs.");
+      buffs.forEach((buff) => {
+        const span = document.createElement("span");
+        span.textContent = buff;
+        ui.buffs.appendChild(span);
+      });
+    }
+
+    function resetRun() {
+      state.score = 0;
+      state.loop = 0;
+      state.difficulty = 1;
+      state.threat = 1;
+      state.combo = { count: 0, timer: 0 };
+      state.player.x = canvas.width / 2;
+      state.player.y = canvas.height / 2;
+      state.player.hp = state.player.maxHp;
+      state.player.energy = state.player.maxEnergy;
+      state.player.dashCooldown = 0;
+      state.player.dashTimer = 0;
+      state.fireRate = 7;
+      state.chain = 0;
+      state.pierce = 0;
+      state.loopRegen = 0;
+      state.pickupRange = 120;
+      state.burstPower = 0;
+      state.overdriveTimer = 0;
+      state.shieldTimer = 0;
+      state.magnetTimer = 0;
+      state.bullets = [];
+      state.enemies = [];
+      state.pickups = [];
+      state.hazards = [];
+      state.particles = [];
+      state.spawnTimer = 0;
+      state.loopTimer = 0;
+      state.ringTimer = 8;
+      state.mineTimer = 6;
+      state.fireTimer = 0;
+      ui.cardOptions.innerHTML = "";
+      ui.loadout.textContent = "Pick a card between loops to evolve your build.";
+      showToast("Loop initialized. Survive the surge!");
+    }
+
+    function applyMetaUpgrades() {
+      const meta = JSON.parse(localStorage.getItem("neon-loop-meta") || "{}");
+      if (meta.shield) state.player.maxHp = 100 + meta.shield;
+      if (meta.energy) state.player.maxEnergy = 60 + meta.energy;
+      if (meta.dash) state.player.dashCooldownMax = 0.8 - meta.dash;
+      if (meta.fire) state.fireRate += meta.fire;
+    }
+
+    function saveMeta(meta) {
+      localStorage.setItem("neon-loop-meta", JSON.stringify(meta));
+    }
+
+    function loadMeta() {
+      const meta = JSON.parse(localStorage.getItem("neon-loop-meta") || "{}");
+      meta.shield = meta.shield || 0;
+      meta.energy = meta.energy || 0;
+      meta.dash = meta.dash || 0;
+      meta.fire = meta.fire || 0;
+      saveMeta(meta);
+      return meta;
+    }
+
+    const metaState = loadMeta();
+    applyMetaUpgrades();
+
+    function updateMetaButtons() {
+      ui.metaShield.disabled = state.chips < 40;
+      ui.metaEnergy.disabled = state.chips < 40;
+      ui.metaDash.disabled = state.chips < 50;
+      ui.metaFire.disabled = state.chips < 50;
+    }
+
+    function spendChips(amount) {
+      if (state.chips < amount) return false;
+      state.chips -= amount;
+      localStorage.setItem("neon-loop-chips", state.chips);
+      return true;
+    }
+
+    function handleMetaUpgrade(key, cost, amount, message) {
+      if (!spendChips(cost)) return;
+      metaState[key] += amount;
+      saveMeta(metaState);
+      applyMetaUpgrades();
+      showToast(message);
+      updateMetaButtons();
+    }
+
+    ui.metaShield.addEventListener("click", () => handleMetaUpgrade("shield", 40, 20, "Max integrity +20"));
+    ui.metaEnergy.addEventListener("click", () => handleMetaUpgrade("energy", 40, 15, "Max energy +15"));
+    ui.metaDash.addEventListener("click", () => handleMetaUpgrade("dash", 50, 0.06, "Dash cooldown improved"));
+    ui.metaFire.addEventListener("click", () => handleMetaUpgrade("fire", 50, 0.6, "Fire rate improved"));
+
+    function spawnCardOptions() {
+      ui.cardOptions.innerHTML = "";
+      const choices = [...cardCatalog].sort(() => 0.5 - Math.random()).slice(0, 3);
+      choices.forEach((card) => {
+        const button = document.createElement("button");
+        button.textContent = `${card.name} — ${card.text}`;
+        button.addEventListener("click", () => {
+          card.apply();
+          ui.cardOptions.innerHTML = "";
+          ui.loadout.textContent = `Active card: ${card.name}`;
+          showToast(`Card equipped: ${card.name}`);
+        });
+        ui.cardOptions.appendChild(button);
+      });
+    }
+
+    function spawnEnemy() {
+      const pool = enemyTypes.filter((type) => !type.boss);
+      let type = pool[Math.floor(Math.random() * pool.length)];
+      if (Math.random() < 0.1 + state.loop * 0.02) {
+        type = enemyTypes.find((enemy) => enemy.id === "crusher");
+      }
+      const edge = Math.floor(Math.random() * 4);
+      const spawn = { x: 0, y: 0 };
+      if (edge === 0) {
+        spawn.x = Math.random() * canvas.width;
+        spawn.y = -30;
+      } else if (edge === 1) {
+        spawn.x = canvas.width + 30;
+        spawn.y = Math.random() * canvas.height;
+      } else if (edge === 2) {
+        spawn.x = Math.random() * canvas.width;
+        spawn.y = canvas.height + 30;
+      } else {
+        spawn.x = -30;
+        spawn.y = Math.random() * canvas.height;
+      }
+      const hpScale = 1 + state.difficulty * 0.15;
+      const speedScale = 1 + state.difficulty * 0.05;
+      state.enemies.push({
         id: crypto.randomUUID(),
         type,
-        hp: baseHp,
-        maxHp: baseHp,
-        speed: type.speed,
-        bounty: type.bounty,
-        progress: 0,
-        delay,
-        slow: 0,
-        burn: 0,
-        poison: 0,
-        chainCooldown: 0,
-        boss: isBoss || type.boss
-      };
+        x: spawn.x,
+        y: spawn.y,
+        hp: type.hp * hpScale,
+        maxHp: type.hp * hpScale,
+        speed: type.speed * speedScale,
+        hitTimer: 0
+      });
     }
 
-    function unlockWandIfNeeded() {
-      const milestones = [1, 3, 5, 7];
-      const unlockIndex = milestones.findIndex((wave) => wave === state.wave);
-      if (unlockIndex >= 0 && unlockIndex + 1 < wandCatalog.length) {
-        const wand = wandCatalog[unlockIndex + 1];
-        if (!state.unlockedWands.includes(wand.id)) {
-          state.wandInventory.push(wand);
-          state.unlockedWands.push(wand.id);
-          renderWandOptions();
-          showToast(`New wand unlocked: ${wand.name}`);
-        }
+    function spawnBoss() {
+      const type = enemyTypes.find((enemy) => enemy.boss);
+      const hpScale = 1 + state.difficulty * 0.25;
+      state.enemies.push({
+        id: crypto.randomUUID(),
+        type,
+        x: canvas.width / 2,
+        y: -40,
+        hp: type.hp * hpScale,
+        maxHp: type.hp * hpScale,
+        speed: type.speed,
+        boss: true,
+        hitTimer: 0
+      });
+      showToast("Loop boss incoming! Clear it for extra chips.");
+    }
+
+    function shoot() {
+      if (state.player.energy <= 0) return;
+      const dx = state.mouse.x - state.player.x;
+      const dy = state.mouse.y - state.player.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const angle = Math.atan2(dy, dx);
+      const speed = 520;
+      state.bullets.push({
+        x: state.player.x,
+        y: state.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1.4,
+        pierce: state.pierce
+      });
+      state.player.energy = Math.max(0, state.player.energy - 1.2);
+      spawnParticles(state.player.x, state.player.y, "#6df3ff");
+    }
+
+    function castBurst() {
+      if (state.player.energy < 40) return;
+      state.player.energy -= 40;
+      const power = 35 * (1 + state.burstPower);
+      state.enemies.forEach((enemy) => {
+        enemy.hp -= power;
+        enemy.hitTimer = 0.2;
+      });
+      state.combo.timer = 3;
+      spawnParticles(state.player.x, state.player.y, "#ff7ad9", 40);
+      showToast("Pulse Burst detonated!");
+    }
+
+    function spawnPickup(x, y, value, type) {
+      state.pickups.push({ x, y, value, type, timer: 8 });
+    }
+
+    function spawnBuffPickup(x, y) {
+      const types = ["overdrive", "shield", "magnet"];
+      const type = types[Math.floor(Math.random() * types.length)];
+      state.pickups.push({ x, y, value: 0, type, timer: 10 });
+    }
+
+    function spawnParticles(x, y, color, count = 16) {
+      for (let i = 0; i < count; i += 1) {
+        state.particles.push({
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 200,
+          vy: (Math.random() - 0.5) * 200,
+          life: 0.8,
+          color
+        });
       }
     }
 
-    function spawnRuneOptions() {
-      ui.runeOptions.innerHTML = "";
-      const choices = runeCatalog.sort(() => 0.5 - Math.random()).slice(0, 3);
-      choices.forEach((rune) => {
-        const button = document.createElement("button");
-        button.textContent = `${rune.name} — ${rune.text}`;
-        button.onclick = () => {
-          rune.apply();
-          state.runes.push(rune);
-          showToast(`Rune acquired: ${rune.name}`);
-          ui.runeOptions.innerHTML = "";
-        };
-        ui.runeOptions.appendChild(button);
+    function updatePlayer(delta) {
+      const speed = state.player.speed * (state.player.dashTimer > 0 ? 1.8 : 1);
+      let dx = 0;
+      let dy = 0;
+      if (state.keys["ArrowUp"] || state.keys["w"]) dy -= 1;
+      if (state.keys["ArrowDown"] || state.keys["s"]) dy += 1;
+      if (state.keys["ArrowLeft"] || state.keys["a"]) dx -= 1;
+      if (state.keys["ArrowRight"] || state.keys["d"]) dx += 1;
+      const length = Math.hypot(dx, dy) || 1;
+      state.player.x += (dx / length) * speed * delta;
+      state.player.y += (dy / length) * speed * delta;
+      state.player.x = Math.max(20, Math.min(canvas.width - 20, state.player.x));
+      state.player.y = Math.max(20, Math.min(canvas.height - 20, state.player.y));
+
+      if (state.player.dashTimer > 0) {
+        state.player.dashTimer -= delta;
+      }
+      if (state.player.dashCooldown > 0) {
+        state.player.dashCooldown -= delta;
+      }
+
+      if (state.player.energy < state.player.maxEnergy) {
+        state.player.energy = Math.min(state.player.maxEnergy, state.player.energy + 12 * delta);
+      }
+    }
+
+    function updateBullets(delta) {
+      state.bullets.forEach((bullet) => {
+        bullet.x += bullet.vx * delta;
+        bullet.y += bullet.vy * delta;
+        bullet.life -= delta;
       });
-    }
-
-    function spawnRelic() {
-      const relic = relicCatalog[Math.floor(Math.random() * relicCatalog.length)];
-      relic.apply();
-      state.relics.push(relic);
-      showToast(`Relic acquired: ${relic.name}`);
-    }
-
-    function addGold(amount) {
-      const bonus = state.goldBonus || 0;
-      const total = amount * (1 + bonus);
-      state.gold += total;
-      state.stats.goldEarned += total;
-    }
-
-    function castNova() {
-      if (state.mana < 50) return;
-      state.mana -= 50;
-      const bonus = state.novaBonus || 0;
-      const damage = 40 * (1 + bonus);
-      state.enemies.forEach((enemy) => {
-        enemy.hp -= damage;
-      });
-      state.effects.push({ type: "nova", time: 0 });
-      showToast("Arcane Nova unleashed!");
+      state.bullets = state.bullets.filter((bullet) => bullet.life > 0);
     }
 
     function updateEnemies(delta) {
-      const weather = getWeatherModifiers();
-      const dayBonus = state.dayNight === "Night" ? 1.08 : 0.95;
-      const speedPenalty = 1 + (state.enemySpeedBonus || 0);
-      state.enemies = state.enemies.filter((enemy) => enemy.hp > 0);
       state.enemies.forEach((enemy) => {
-        if (enemy.delay > 0) {
-          enemy.delay -= delta * 1000;
-          return;
-        }
-        const slowMultiplier = enemy.slow ? 1 - enemy.slow : 1;
-        const speed = enemy.speed * weather.enemySpeed * dayBonus * slowMultiplier * speedPenalty;
-        enemy.progress += speed * delta;
-        enemy.slow = Math.max(0, enemy.slow - delta * 0.2);
-        enemy.hp -= (enemy.burn + enemy.poison) * delta;
-        if (enemy.progress >= getPathLength()) {
-          damageBase(enemy.boss ? 40 : 20);
-          enemy.hp = 0;
-        }
+        const dx = state.player.x - enemy.x;
+        const dy = state.player.y - enemy.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        enemy.x += (dx / dist) * enemy.speed * delta;
+        enemy.y += (dy / dist) * enemy.speed * delta;
+        if (enemy.hitTimer > 0) enemy.hitTimer -= delta;
       });
     }
 
-    function updateTowers(delta) {
-      state.towers.forEach((tower) => {
-        tower.cooldown -= delta;
-        if (tower.cooldown <= 0) {
-          const target = findTarget(tower.x, tower.y, tower.range);
-          if (target) {
-            fireProjectile(tower, target, "tower");
-            tower.cooldown = 1 / tower.fireRate;
-          }
-        }
+    function spawnRing() {
+      state.hazards.push({
+        id: crypto.randomUUID(),
+        type: "ring",
+        radius: 0,
+        speed: 220 + state.threat * 18,
+        hit: false
       });
     }
 
-    function updateHero(delta) {
-      state.hero.cooldown -= delta;
-      if (state.hero.cooldown <= 0) {
-        const target = findTarget(state.hero.x, state.hero.y, state.wand.stats.range);
-        if (target) {
-          fireProjectile(state.hero, target, "hero");
-          const bonus = state.heroCooldownBonus || 0;
-          state.hero.cooldown = state.wand.stats.fireRate * (1 - bonus);
-          if (state.wand.stats.manaDrain) {
-            state.mana = Math.max(0, state.mana - state.wand.stats.manaDrain);
-          }
-        }
+    function spawnMine() {
+      const margin = 80;
+      const x = margin + Math.random() * (canvas.width - margin * 2);
+      const y = margin + Math.random() * (canvas.height - margin * 2);
+      state.hazards.push({
+        id: crypto.randomUUID(),
+        type: "mine",
+        x,
+        y,
+        radius: 14,
+        timer: 5 + Math.random() * 3
+      });
+    }
+
+    function updateHazards(delta) {
+      state.ringTimer -= delta;
+      state.mineTimer -= delta;
+      if (state.ringTimer <= 0) {
+        spawnRing();
+        state.ringTimer = Math.max(4, 10 - state.threat * 0.6);
       }
-    }
+      if (state.mineTimer <= 0) {
+        spawnMine();
+        state.mineTimer = Math.max(3, 8 - state.threat * 0.4);
+      }
 
-    function fireProjectile(source, target, owner) {
-      const wandStats = owner === "hero" ? state.wand.stats : null;
-      const baseDamage = owner === "hero" ? wandStats.damage : source.damage;
-      const critChance = owner === "hero" ? wandStats.crit : 0.08;
-      const synergy = owner === "hero" ? 0 : getTowerSynergy(source);
-      const crit = Math.random() < critChance;
-      const damage = baseDamage * (crit ? 1.8 : 1) * (1 + (state.towerDamageBonus || 0) + synergy);
-      state.projectiles.push({
-        x: source.x,
-        y: source.y,
-        target,
-        speed: 340,
-        damage,
-        crit,
-        owner,
-        stats: wandStats || source,
-        chainLeft: (wandStats?.chain || source.chain || 0) + (state.chainBonus || 0)
+      state.hazards.forEach((hazard) => {
+        if (hazard.type === "ring") {
+          hazard.radius += hazard.speed * delta;
+          const dist = Math.hypot(state.player.x - canvas.width / 2, state.player.y - canvas.height / 2);
+          if (!hazard.hit && Math.abs(dist - hazard.radius) < 10 && state.player.dashTimer <= 0) {
+            if (state.shieldTimer <= 0) {
+              state.player.hp -= 10;
+              state.combo.count = 0;
+              if (state.player.hp <= 0) endRun();
+            }
+            hazard.hit = true;
+          }
+        }
+        if (hazard.type === "mine") {
+          hazard.timer -= delta;
+          const dist = Math.hypot(state.player.x - hazard.x, state.player.y - hazard.y);
+          if (dist < 26 || hazard.timer <= 0) {
+            hazard.exploded = true;
+            spawnParticles(hazard.x, hazard.y, "#ff6b6b", 30);
+            if (dist < 40 && state.player.dashTimer <= 0 && state.shieldTimer <= 0) {
+              state.player.hp -= 14;
+              state.combo.count = 0;
+              if (state.player.hp <= 0) endRun();
+            }
+          }
+        }
+      });
+      state.hazards = state.hazards.filter((hazard) => {
+        if (hazard.type === "ring") return hazard.radius < Math.max(canvas.width, canvas.height);
+        if (hazard.type === "mine") return !hazard.exploded;
+        return false;
       });
     }
 
-    function getTowerSynergy(tower) {
-      const neighbors = [
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1]
-      ];
-      let bonus = 0;
-      neighbors.forEach(([dx, dy]) => {
-        const neighbor = state.towers.find(
-          (item) => item.gridX === tower.gridX + dx && item.gridY === tower.gridY + dy
-        );
-        if (neighbor && neighbor.type !== tower.type) bonus += 0.05;
-      });
-      return bonus;
+    function getPickupRange() {
+      return state.pickupRange + (state.magnetTimer > 0 ? 80 : 0);
     }
 
-    function updateProjectiles(delta) {
-      const weather = getWeatherModifiers();
-      state.projectiles = state.projectiles.filter((projectile) => projectile.target.hp > 0);
-      state.projectiles.forEach((projectile) => {
-        const dx = projectile.target.x - projectile.x;
-        const dy = projectile.target.y - projectile.y;
+    function updatePickups(delta) {
+      const effectiveRange = getPickupRange();
+      state.pickups.forEach((pickup) => {
+        const dx = state.player.x - pickup.x;
+        const dy = state.player.y - pickup.y;
         const dist = Math.hypot(dx, dy);
-        const speed = projectile.speed * weather.projectileSpeed;
-        if (dist < speed * delta) {
-          applyDamage(projectile.target, projectile);
-          projectile.hit = true;
-        } else {
-          projectile.x += (dx / dist) * speed * delta;
-          projectile.y += (dy / dist) * speed * delta;
+        if (dist < effectiveRange) {
+          pickup.x += (dx / dist) * 120 * delta;
+          pickup.y += (dy / dist) * 120 * delta;
+        }
+        pickup.timer -= delta;
+      });
+      state.pickups = state.pickups.filter((pickup) => pickup.timer > 0);
+    }
+
+    function updateParticles(delta) {
+      state.particles.forEach((particle) => {
+        particle.x += particle.vx * delta;
+        particle.y += particle.vy * delta;
+        particle.life -= delta;
+      });
+      state.particles = state.particles.filter((particle) => particle.life > 0);
+    }
+
+    function handleCollisions() {
+      state.bullets.forEach((bullet) => {
+        state.enemies.forEach((enemy) => {
+          if (enemy.hp <= 0) return;
+          const dist = Math.hypot(enemy.x - bullet.x, enemy.y - bullet.y);
+          if (dist < 18) {
+            enemy.hp -= 18;
+            enemy.hitTimer = 0.2;
+            bullet.pierce -= 1;
+            if (bullet.pierce < 0) bullet.life = 0;
+            if (state.chain > 0) {
+              const target = state.enemies
+                .filter((other) => other !== enemy && other.hp > 0)
+                .sort((a, b) => Math.hypot(a.x - enemy.x, a.y - enemy.y) - Math.hypot(b.x - enemy.x, b.y - enemy.y))[0];
+              if (target && Math.hypot(target.x - enemy.x, target.y - enemy.y) < 140) {
+                target.hp -= 10 * state.chain;
+              }
+            }
+            state.combo.timer = 3;
+          }
+        });
+      });
+
+      state.enemies.forEach((enemy) => {
+        if (enemy.hp <= 0) return;
+        const dist = Math.hypot(enemy.x - state.player.x, enemy.y - state.player.y);
+        if (dist < state.player.radius + 12 && state.player.dashTimer <= 0) {
+          if (state.shieldTimer > 0) {
+            enemy.hp -= 12;
+            enemy.hitTimer = 0.2;
+            return;
+          }
+          state.player.hp -= enemy.boss ? 22 : 12;
+          enemy.hp -= 10;
+          enemy.hitTimer = 0.3;
+          state.combo.count = 0;
+          if (state.player.hp <= 0) {
+            endRun();
+          }
         }
       });
-      state.projectiles = state.projectiles.filter((projectile) => !projectile.hit);
-    }
 
-    function applyDamage(target, projectile) {
-      target.hp -= projectile.damage;
-      if (projectile.stats?.burn) target.burn = Math.max(target.burn, projectile.stats.burn);
-      if (projectile.stats?.slow) target.slow = Math.max(target.slow, projectile.stats.slow);
-      if (projectile.stats?.poison) target.poison = Math.max(target.poison, projectile.stats.poison);
-      if (projectile.chainLeft > 0) {
-        const next = findTarget(target.x, target.y, 120, target.id);
-        if (next) {
-          state.projectiles.push({
-            x: target.x,
-            y: target.y,
-            target: next,
-            speed: 300,
-            damage: projectile.damage * 0.8,
-            crit: false,
-            owner: projectile.owner,
-            stats: projectile.stats,
-            chainLeft: projectile.chainLeft - 1
-          });
+      state.pickups.forEach((pickup) => {
+        const dist = Math.hypot(pickup.x - state.player.x, pickup.y - state.player.y);
+        if (dist < 18) {
+          if (pickup.type === "chip") {
+            state.chips += pickup.value;
+            localStorage.setItem("neon-loop-chips", state.chips);
+          } else if (pickup.type === "overdrive") {
+            state.overdriveTimer = 6;
+            showToast("Overdrive online!");
+          } else if (pickup.type === "shield") {
+            state.shieldTimer = 6;
+            showToast("Shield core active!");
+          } else if (pickup.type === "magnet") {
+            state.magnetTimer = 8;
+            showToast("Magnet field engaged!");
+          }
+          state.score += pickup.value * 4;
+          pickup.timer = 0;
         }
-      }
-      if (target.hp <= 0) {
-        handleEnemyDeath(target);
-      }
-    }
-
-    function handleEnemyDeath(enemy) {
-      state.stats.kills += 1;
-      updateCombo();
-      addGold(enemy.bounty);
-      if (enemy.type.id === "elite") {
-        spawnLoot(enemy.x, enemy.y, 24);
-      }
-      if (enemy.boss) {
-        state.stats.bossesDefeated += 1;
-        spawnRelic();
-        spawnLoot(enemy.x, enemy.y, 40);
-      }
-      if (!enemy.boss && Math.random() < 0.1) {
-        spawnLoot(enemy.x, enemy.y, 12);
-      }
-      if (state.stats.kills % 20 === 0) {
-        showToast("Achievement: Slayer streak!");
-      }
-    }
-
-    function updateCombo() {
-      if (state.combo.timer > 0) {
-        state.combo.count += 1;
-      } else {
-        state.combo.count = 1;
-      }
-      state.combo.timer = 3;
-      if (state.combo.count % 5 === 0) {
-        state.mana = Math.min(state.manaMax, state.mana + 10);
-        showToast(`Combo x${state.combo.count}! Mana surge.`);
-      }
-    }
-
-    function spawnLoot(x, y, value) {
-      state.loot.push({ x, y, value, timer: 3 });
-    }
-
-    function updateLoot(delta) {
-      state.loot.forEach((drop) => {
-        drop.timer -= delta;
       });
-      const collected = state.loot.filter((drop) => drop.timer <= 0);
-      collected.forEach((drop) => addGold(drop.value));
-      state.loot = state.loot.filter((drop) => drop.timer > 0);
     }
 
-    function updateWaveState() {
-      if (state.waveInProgress && state.enemies.length === 0) {
-        state.waveInProgress = false;
-        state.stats.wavesCleared += 1;
-        spawnRuneOptions();
-        showToast("Wave cleared! Choose a rune.");
-      }
+    function getEffectiveFireRate() {
+      const bonus = state.overdriveTimer > 0 ? 1.8 : 1;
+      return state.fireRate * bonus;
     }
 
-    function damageBase(amount) {
-      state.baseHp -= amount;
-      if (state.baseHp <= 0) {
-        if (state.reviveToken) {
-          state.reviveToken = false;
-          state.baseHp = state.baseHpMax * 0.3;
-          showToast("Phoenix Crest revived the crystal!");
-        } else {
-          state.running = false;
-          showToast("The crystal has fallen.");
+    function updateBuffTimers(delta) {
+      if (state.overdriveTimer > 0) state.overdriveTimer = Math.max(0, state.overdriveTimer - delta);
+      if (state.shieldTimer > 0) state.shieldTimer = Math.max(0, state.shieldTimer - delta);
+      if (state.magnetTimer > 0) state.magnetTimer = Math.max(0, state.magnetTimer - delta);
+      renderBuffs();
+    }
+
+    function handleEnemyDeaths() {
+      state.enemies.forEach((enemy) => {
+        if (enemy.hp <= 0 && !enemy.dead) {
+          enemy.dead = true;
+          state.score += enemy.type.score * (1 + state.combo.count * 0.1);
+          state.combo.count += 1;
+          spawnParticles(enemy.x, enemy.y, enemy.type.color, enemy.boss ? 40 : 18);
+          if (Math.random() < 0.35) {
+            spawnPickup(enemy.x, enemy.y, enemy.boss ? 12 : 5, "chip");
+          }
+          if (Math.random() < 0.16) {
+            spawnBuffPickup(enemy.x, enemy.y);
+          }
+          if (enemy.boss) {
+            spawnPickup(enemy.x, enemy.y, 18, "chip");
+          }
         }
-      }
+      });
+      state.enemies = state.enemies.filter((enemy) => enemy.hp > 0);
     }
 
-    function regenerate(delta) {
-      const regen = state.dayNight === "Night" ? 6 : 4;
-      state.mana = Math.min(state.manaMax, state.mana + regen * delta);
-      if (!state.waveInProgress) {
-        state.baseHp = Math.min(state.baseHpMax, state.baseHp + 4 * delta);
-      }
-    }
-
-    function updateComboTimer(delta) {
+    function updateCombo(delta) {
       if (state.combo.timer > 0) {
         state.combo.timer -= delta;
-        if (state.combo.timer <= 0) state.combo.count = 0;
-      }
-    }
-
-    function updateEnvironment(delta) {
-      state.weatherTimer += delta;
-      state.dayTimer += delta;
-      if (state.weatherTimer > 22) {
-        state.weatherTimer = 0;
-        const weather = weatherStates[Math.floor(Math.random() * weatherStates.length)];
-        state.weather = weather.name;
-        showToast(`Weather shifted: ${weather.name}`);
-      }
-      if (state.dayTimer > 28) {
-        state.dayTimer = 0;
-        state.dayNight = state.dayNight === "Day" ? "Night" : "Day";
-      }
-    }
-
-    function getWeatherModifiers() {
-      return weatherStates.find((weather) => weather.name === state.weather) || weatherStates[0];
-    }
-
-    function getPathLength() {
-      let length = 0;
-      for (let i = 0; i < path.length - 1; i += 1) {
-        const dx = (path[i + 1].x - path[i].x) * grid.size;
-        const dy = (path[i + 1].y - path[i].y) * grid.size;
-        length += Math.hypot(dx, dy);
-      }
-      return length;
-    }
-
-    function getPositionOnPath(progress) {
-      let remaining = progress;
-      for (let i = 0; i < path.length - 1; i += 1) {
-        const start = path[i];
-        const end = path[i + 1];
-        const dx = (end.x - start.x) * grid.size;
-        const dy = (end.y - start.y) * grid.size;
-        const segment = Math.hypot(dx, dy);
-        if (remaining <= segment) {
-          return {
-            x: start.x * grid.size + (dx / segment) * remaining + grid.size / 2,
-            y: start.y * grid.size + (dy / segment) * remaining + grid.size / 2
-          };
+        if (state.combo.timer <= 0) {
+          state.combo.count = 0;
         }
-        remaining -= segment;
       }
-      const last = path[path.length - 1];
-      return { x: last.x * grid.size + grid.size / 2, y: last.y * grid.size + grid.size / 2 };
     }
 
-    function findTarget(x, y, range, ignoreId) {
-      return state.enemies
-        .filter((enemy) => enemy.hp > 0 && enemy.id !== ignoreId && enemy.delay <= 0)
-        .map((enemy) => ({ enemy, pos: getPositionOnPath(enemy.progress) }))
-        .map(({ enemy, pos }) => ({ enemy, dist: Math.hypot(pos.x - x, pos.y - y), pos }))
-        .filter(({ dist }) => dist <= range)
-        .sort((a, b) => b.enemy.progress - a.enemy.progress)[0]?.enemy || null;
+    function updateSpawns(delta) {
+      state.spawnTimer -= delta;
+      if (state.spawnTimer <= 0) {
+        spawnEnemy();
+        state.spawnTimer = Math.max(0.3, 1.2 - state.difficulty * 0.08);
+      }
     }
 
-    function placeTower(type, gridX, gridY) {
-      const towerType = towerCatalog[type];
-      if (state.gold < towerType.cost) return;
-      if (isPathTile(gridX, gridY)) return;
-      if (state.towers.some((tower) => tower.gridX === gridX && tower.gridY === gridY)) return;
-      const tower = {
-        id: crypto.randomUUID(),
-        type,
-        gridX,
-        gridY,
-        x: gridX * grid.size + grid.size / 2,
-        y: gridY * grid.size + grid.size / 2,
-        damage: towerType.damage,
-        fireRate: towerType.fireRate,
-        range: towerType.range,
-        cost: towerType.cost,
-        level: 1,
-        cooldown: 0,
-        color: towerType.color,
-        burn: towerType.burn || 0,
-        slow: towerType.slow || 0,
-        chain: towerType.chain || 0
-      };
-      state.towers.push(tower);
-      state.gold -= tower.cost;
-      showToast(`${towerType.name} tower placed.`);
+    function updateLoop(delta) {
+      state.loopTimer += delta;
+      if (state.loopTimer > 30) {
+        state.loopTimer = 0;
+        state.loop += 1;
+        state.difficulty += 0.4;
+        state.threat = 1 + state.loop * 0.4 + state.difficulty * 0.2;
+        state.player.hp = Math.min(state.player.maxHp, state.player.hp + state.loopRegen);
+        spawnCardOptions();
+        if (state.loop % 3 === 0) {
+          spawnBoss();
+        }
+      }
     }
 
-    function upgradeTower() {
-      const tower = state.towers.find((item) => item.id === state.selectedTowerId);
-      if (!tower) return;
-      const cost = Math.floor(tower.cost * 0.7);
-      if (state.gold < cost) return;
-      state.gold -= cost;
-      tower.level += 1;
-      tower.damage *= 1.2;
-      tower.range += 8;
-      tower.fireRate *= 1.08;
-      showToast("Tower upgraded.");
+    function endRun() {
+      state.running = false;
+      state.best = Math.max(state.best, Math.floor(state.score));
+      localStorage.setItem("neon-loop-best", state.best);
+      showToast("Run over. Click Start Run to loop again.");
     }
 
-    function sellTower() {
-      const towerIndex = state.towers.findIndex((item) => item.id === state.selectedTowerId);
-      if (towerIndex < 0) return;
-      const tower = state.towers[towerIndex];
-      state.gold += tower.cost * 0.6;
-      state.towers.splice(towerIndex, 1);
-      state.selectedTowerId = null;
-      showToast("Tower sold.");
-    }
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    function isPathTile(x, y) {
-      for (let i = 0; i < path.length - 1; i += 1) {
-        const start = path[i];
-        const end = path[i + 1];
-        if (start.x === end.x) {
-          const minY = Math.min(start.y, end.y);
-          const maxY = Math.max(start.y, end.y);
-          if (x === start.x && y >= minY && y <= maxY) return true;
+      ctx.fillStyle = "rgba(8, 12, 22, 0.8)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(109,243,255,0.1)";
+      for (let i = 0; i < canvas.width; i += 60) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 60) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      state.pickups.forEach((pickup) => {
+        if (pickup.type === "chip") {
+          ctx.fillStyle = "#f7c96b";
+        } else if (pickup.type === "overdrive") {
+          ctx.fillStyle = "#6df3ff";
+        } else if (pickup.type === "shield") {
+          ctx.fillStyle = "#8b8bff";
+        } else if (pickup.type === "magnet") {
+          ctx.fillStyle = "#ff7ad9";
         } else {
-          const minX = Math.min(start.x, end.x);
-          const maxX = Math.max(start.x, end.x);
-          if (y === start.y && x >= minX && x <= maxX) return true;
+          ctx.fillStyle = "#f7c96b";
         }
-      }
-      return false;
-    }
-
-    function drawGrid() {
-      ctx.strokeStyle = "rgba(255,255,255,0.05)";
-      for (let x = 0; x <= grid.cols; x += 1) {
         ctx.beginPath();
-        ctx.moveTo(x * grid.size, 0);
-        ctx.lineTo(x * grid.size, grid.rows * grid.size);
-        ctx.stroke();
-      }
-      for (let y = 0; y <= grid.rows; y += 1) {
-        ctx.beginPath();
-        ctx.moveTo(0, y * grid.size);
-        ctx.lineTo(grid.cols * grid.size, y * grid.size);
-        ctx.stroke();
-      }
-    }
-
-    function drawPath() {
-      ctx.strokeStyle = "rgba(127,124,255,0.45)";
-      ctx.lineWidth = 18;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      path.forEach((point, index) => {
-        const px = point.x * grid.size + grid.size / 2;
-        const py = point.y * grid.size + grid.size / 2;
-        if (index === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
-      ctx.stroke();
-      ctx.lineWidth = 1;
-    }
-
-    function drawTowers() {
-      state.towers.forEach((tower) => {
-        ctx.fillStyle = tower.color;
-        ctx.beginPath();
-        ctx.arc(tower.x, tower.y, 16, 0, Math.PI * 2);
+        ctx.arc(pickup.x, pickup.y, 6, 0, Math.PI * 2);
         ctx.fill();
-        if (tower.id === state.selectedTowerId) {
-          ctx.strokeStyle = "#ffffff";
+      });
+
+      state.hazards.forEach((hazard) => {
+        if (hazard.type === "ring") {
+          ctx.strokeStyle = "rgba(255, 107, 107, 0.5)";
           ctx.beginPath();
-          ctx.arc(tower.x, tower.y, tower.range, 0, Math.PI * 2);
+          ctx.arc(canvas.width / 2, canvas.height / 2, hazard.radius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        if (hazard.type === "mine") {
+          ctx.fillStyle = "#ff6b6b";
+          ctx.beginPath();
+          ctx.arc(hazard.x, hazard.y, hazard.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(255,255,255,0.3)";
           ctx.stroke();
         }
       });
-    }
 
-    function drawHero() {
-      ctx.fillStyle = "#7f7cff";
-      ctx.beginPath();
-      ctx.arc(state.hero.x, state.hero.y, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "12px sans-serif";
-      ctx.fillText(state.wand.element, state.hero.x - 20, state.hero.y + 4);
-    }
+      state.particles.forEach((particle) => {
+        ctx.fillStyle = particle.color;
+        ctx.globalAlpha = Math.max(particle.life, 0);
+        ctx.fillRect(particle.x, particle.y, 3, 3);
+        ctx.globalAlpha = 1;
+      });
 
-    function drawEnemies() {
+      state.bullets.forEach((bullet) => {
+        ctx.fillStyle = "#6df3ff";
+        ctx.beginPath();
+        ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
       state.enemies.forEach((enemy) => {
-        if (enemy.delay > 0) return;
-        const pos = getPositionOnPath(enemy.progress);
-        enemy.x = pos.x;
-        enemy.y = pos.y;
         ctx.fillStyle = enemy.type.color;
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, enemy.boss ? 18 : 12, 0, Math.PI * 2);
+        ctx.arc(enemy.x, enemy.y, enemy.boss ? 18 : 12, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(pos.x - 18, pos.y - 22, 36, 4);
-        ctx.fillStyle = enemy.type.boss ? "#ff5f7a" : "#7f7cff";
-        ctx.fillRect(pos.x - 18, pos.y - 22, 36 * (enemy.hp / enemy.maxHp), 4);
-        if (enemy.burn > 0) {
-          ctx.fillStyle = "#ff825c";
-          ctx.fillText("🔥", pos.x - 4, pos.y - 18);
+        if (enemy.hitTimer > 0) {
+          ctx.strokeStyle = "#ffffff";
+          ctx.stroke();
         }
-        if (enemy.slow > 0.05) {
-          ctx.fillStyle = "#66d0ff";
-          ctx.fillText("❄", pos.x + 4, pos.y - 18);
-        }
+        ctx.fillStyle = "rgba(0,0,0,0.55)";
+        ctx.fillRect(enemy.x - 18, enemy.y - 22, 36, 4);
+        ctx.fillStyle = enemy.type.color;
+        ctx.fillRect(enemy.x - 18, enemy.y - 22, 36 * (enemy.hp / enemy.maxHp), 4);
       });
-    }
 
-    function drawProjectiles() {
-      state.projectiles.forEach((projectile) => {
-        ctx.strokeStyle = projectile.owner === "hero" ? "#9ee4ff" : "#f7c96b";
-        ctx.beginPath();
-        ctx.arc(projectile.x, projectile.y, projectile.crit ? 4 : 3, 0, Math.PI * 2);
-        ctx.stroke();
-      });
-    }
+      ctx.fillStyle = "#6df3ff";
+      ctx.beginPath();
+      ctx.arc(state.player.x, state.player.y, state.player.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
 
-    function drawLoot() {
-      state.loot.forEach((drop) => {
-        ctx.fillStyle = "#f7c96b";
-        ctx.beginPath();
-        ctx.arc(drop.x, drop.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-
-    function drawEnvironmentOverlay() {
-      if (state.dayNight === "Night") {
-        ctx.fillStyle = "rgba(9, 12, 25, 0.35)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-      if (state.weather === "Fog") {
-        ctx.fillStyle = "rgba(120, 140, 180, 0.2)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+      ctx.strokeStyle = "rgba(109,243,255,0.25)";
+      ctx.beginPath();
+      ctx.arc(state.player.x, state.player.y, getPickupRange(), 0, Math.PI * 2);
+      ctx.stroke();
     }
 
     function loop(timestamp) {
@@ -1152,74 +1091,66 @@
       const delta = ((timestamp - state.lastTime) / 1000) * state.speed;
       state.lastTime = timestamp;
       if (state.running) {
-        updateEnvironment(delta);
+        if (state.mouse.down) {
+          state.fireTimer -= delta;
+          if (state.fireTimer <= 0) {
+            shoot();
+            state.fireTimer = 1 / getEffectiveFireRate();
+          }
+        }
+        updatePlayer(delta);
+        updateBullets(delta);
         updateEnemies(delta);
-        updateTowers(delta);
-        updateHero(delta);
-        updateProjectiles(delta);
-        updateLoot(delta);
-        updateComboTimer(delta);
-        updateWaveState();
-        regenerate(delta);
+        updatePickups(delta);
+        updateParticles(delta);
+        updateHazards(delta);
+        updateBuffTimers(delta);
+        handleCollisions();
+        handleEnemyDeaths();
+        updateCombo(delta);
+        updateSpawns(delta);
+        updateLoop(delta);
       }
       render();
       updateUI();
       requestAnimationFrame(loop);
     }
 
-    function render() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawGrid();
-      drawPath();
-      drawTowers();
-      drawHero();
-      drawEnemies();
-      drawProjectiles();
-      drawLoot();
-      drawEnvironmentOverlay();
-    }
-
-    canvas.addEventListener("click", (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const gridX = Math.floor((x / rect.width) * canvas.width / grid.size);
-      const gridY = Math.floor((y / rect.height) * canvas.height / grid.size);
-      const tower = state.towers.find((item) => item.gridX === gridX && item.gridY === gridY);
-      if (tower) {
-        state.selectedTowerId = tower.id;
-      }
-    });
-
     canvas.addEventListener("mousemove", (event) => {
       const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const gridX = Math.floor((x / rect.width) * canvas.width / grid.size);
-      const gridY = Math.floor((y / rect.height) * canvas.height / grid.size);
-      const tower = state.towers.find((item) => item.gridX === gridX && item.gridY === gridY);
-      canvas.title = tower
-        ? `${tower.type.toUpperCase()} LV${tower.level}\nDamage ${tower.damage.toFixed(1)}\nRange ${tower.range.toFixed(0)}\nRate ${tower.fireRate.toFixed(2)}`
-        : "";
+      state.mouse.x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+      state.mouse.y = ((event.clientY - rect.top) / rect.height) * canvas.height;
     });
 
-    canvas.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const gridX = Math.floor((x / rect.width) * canvas.width / grid.size);
-      const gridY = Math.floor((y / rect.height) * canvas.height / grid.size);
-      const towerIndex = state.towers.findIndex((item) => item.gridX === gridX && item.gridY === gridY);
-      if (towerIndex >= 0) {
-        state.selectedTowerId = state.towers[towerIndex].id;
-        sellTower();
+    canvas.addEventListener("mousedown", () => {
+      state.mouse.down = true;
+    });
+
+    canvas.addEventListener("mouseup", () => {
+      state.mouse.down = false;
+    });
+
+    document.addEventListener("keydown", (event) => {
+      state.keys[event.key] = true;
+      if (event.key === "Shift" && state.player.dashCooldown <= 0) {
+        state.player.dashTimer = 0.25;
+        state.player.dashCooldown = state.player.dashCooldownMax || 0.8;
+      }
+      if (event.key === " ") {
+        shoot();
+      }
+      if (event.key.toLowerCase() === "e") {
+        castBurst();
       }
     });
 
-    ui.startWave.addEventListener("click", () => {
+    document.addEventListener("keyup", (event) => {
+      state.keys[event.key] = false;
+    });
+
+    ui.startRun.addEventListener("click", () => {
+      resetRun();
       state.running = true;
-      spawnWave();
     });
 
     ui.pause.addEventListener("click", () => {
@@ -1232,43 +1163,13 @@
       ui.speed.textContent = state.speed === 1 ? "Speed x1" : "Speed x1.6";
     });
 
-    ui.nova.addEventListener("click", () => {
-      castNova();
-    });
+    ui.burst.addEventListener("click", castBurst);
 
-    ui.wandSelect.addEventListener("change", (event) => {
-      const wand = state.wandInventory.find((item) => item.id === event.target.value);
-      if (wand) {
-        state.wand = wand;
-        renderWandDetails();
-      }
-    });
-
-    ui.buildButtons.arcane.addEventListener("click", () => (state.pendingBuild = "arcane"));
-    ui.buildButtons.frost.addEventListener("click", () => (state.pendingBuild = "frost"));
-    ui.buildButtons.flame.addEventListener("click", () => (state.pendingBuild = "flame"));
-    ui.buildButtons.storm.addEventListener("click", () => (state.pendingBuild = "storm"));
-
-    ui.sell.addEventListener("click", sellTower);
-    ui.upgrade.addEventListener("click", upgradeTower);
-
-    canvas.addEventListener("mousedown", (event) => {
-      if (!state.pendingBuild) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const gridX = Math.floor((x / rect.width) * canvas.width / grid.size);
-      const gridY = Math.floor((y / rect.height) * canvas.height / grid.size);
-      placeTower(state.pendingBuild, gridX, gridY);
-      state.pendingBuild = null;
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "n") castNova();
-      if (event.key === "p") state.running = !state.running;
-    });
-
-    init();
+    renderTips();
+    renderBuffs();
+    updateUI();
+    updateMetaButtons();
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
