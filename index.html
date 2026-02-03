@@ -390,7 +390,7 @@
 
     const cardCatalog = [
       { name: "Arc Coil", text: "Shots chain once to a nearby target.", apply: () => { state.chain += 1; } },
-      { name: "Flux Barrage", text: "+20% fire rate.", apply: () => { state.fireRate *= 1.2; } },
+      { name: "Flux Barrage", text: "+20% fire rate.", apply: () => { state.wand.fireRate *= 1.2; } },
       { name: "Overclock Shield", text: "Regenerate 2 integrity per loop.", apply: () => { state.loopRegen += 2; } },
       { name: "Lumen Rounds", text: "Shots pierce 1 enemy.", apply: () => { state.pierce += 1; } },
       { name: "Magnet Core", text: "Pickups pull from farther away.", apply: () => { state.pickupRange += 40; } },
@@ -404,6 +404,24 @@
       { id: "phantom", name: "Phantom", hp: 40, speed: 80, color: "#8b8bff", score: 30 },
       { id: "warden", name: "Warden", hp: 120, speed: 50, color: "#ff6b6b", score: 80, boss: true }
     ];
+
+    class Projectile {
+      constructor(x, y, speed, damage) {
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.damage = damage;
+        this.radius = 4;
+      }
+
+      update(delta) {
+        this.x += this.speed * delta;
+      }
+
+      isOffscreen() {
+        return this.x - this.radius > canvas.width;
+      }
+    }
 
     const state = {
       running: false,
@@ -427,7 +445,11 @@
         dashCooldown: 0,
         dashTimer: 0
       },
-      fireRate: 7,
+      wand: {
+        fireRate: 7,
+        projectileSpeed: 520,
+        damage: 18
+      },
       chain: 0,
       pierce: 0,
       loopRegen: 0,
@@ -436,7 +458,7 @@
       overdriveTimer: 0,
       shieldTimer: 0,
       magnetTimer: 0,
-      bullets: [],
+      projectiles: [],
       enemies: [],
       pickups: [],
       hazards: [],
@@ -510,7 +532,9 @@
       state.player.energy = state.player.maxEnergy;
       state.player.dashCooldown = 0;
       state.player.dashTimer = 0;
-      state.fireRate = 7;
+      state.wand.fireRate = 7;
+      state.wand.projectileSpeed = 520;
+      state.wand.damage = 18;
       state.chain = 0;
       state.pierce = 0;
       state.loopRegen = 0;
@@ -519,7 +543,7 @@
       state.overdriveTimer = 0;
       state.shieldTimer = 0;
       state.magnetTimer = 0;
-      state.bullets = [];
+      state.projectiles = [];
       state.enemies = [];
       state.pickups = [];
       state.hazards = [];
@@ -539,7 +563,7 @@
       if (meta.shield) state.player.maxHp = 100 + meta.shield;
       if (meta.energy) state.player.maxEnergy = 60 + meta.energy;
       if (meta.dash) state.player.dashCooldownMax = 0.8 - meta.dash;
-      if (meta.fire) state.fireRate += meta.fire;
+      if (meta.fire) state.wand.fireRate += meta.fire;
     }
 
     function saveMeta(meta) {
@@ -655,21 +679,18 @@
       showToast("Loop boss incoming! Clear it for extra chips.");
     }
 
-    function shoot() {
+    function fireWand() {
       if (state.player.energy <= 0) return;
-      const dx = state.mouse.x - state.player.x;
-      const dy = state.mouse.y - state.player.y;
-      const dist = Math.hypot(dx, dy) || 1;
-      const angle = Math.atan2(dy, dx);
-      const speed = 520;
-      state.bullets.push({
-        x: state.player.x,
-        y: state.player.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 1.4,
-        pierce: state.pierce
-      });
+      if (state.fireTimer > 0) return;
+      state.projectiles.push(
+        new Projectile(
+          state.player.x + state.player.radius + 4,
+          state.player.y,
+          state.wand.projectileSpeed,
+          state.wand.damage
+        )
+      );
+      state.fireTimer = 1 / getEffectiveFireRate();
       state.player.energy = Math.max(0, state.player.energy - 1.2);
       spawnParticles(state.player.x, state.player.y, "#6df3ff");
     }
@@ -736,13 +757,11 @@
       }
     }
 
-    function updateBullets(delta) {
-      state.bullets.forEach((bullet) => {
-        bullet.x += bullet.vx * delta;
-        bullet.y += bullet.vy * delta;
-        bullet.life -= delta;
+    function updateProjectiles(delta) {
+      state.projectiles.forEach((projectile) => {
+        projectile.update(delta);
       });
-      state.bullets = state.bullets.filter((bullet) => bullet.life > 0);
+      state.projectiles = state.projectiles.filter((projectile) => !projectile.isOffscreen() && !projectile.hit);
     }
 
     function updateEnemies(delta) {
@@ -855,15 +874,14 @@
     }
 
     function handleCollisions() {
-      state.bullets.forEach((bullet) => {
+      state.projectiles.forEach((projectile) => {
         state.enemies.forEach((enemy) => {
-          if (enemy.hp <= 0) return;
-          const dist = Math.hypot(enemy.x - bullet.x, enemy.y - bullet.y);
-          if (dist < 18) {
-            enemy.hp -= 18;
+          if (enemy.hp <= 0 || projectile.hit) return;
+          const dist = Math.hypot(enemy.x - projectile.x, enemy.y - projectile.y);
+          if (dist < 12 + projectile.radius) {
+            enemy.hp -= projectile.damage;
             enemy.hitTimer = 0.2;
-            bullet.pierce -= 1;
-            if (bullet.pierce < 0) bullet.life = 0;
+            projectile.hit = true;
             if (state.chain > 0) {
               const target = state.enemies
                 .filter((other) => other !== enemy && other.hp > 0)
@@ -920,7 +938,7 @@
 
     function getEffectiveFireRate() {
       const bonus = state.overdriveTimer > 0 ? 1.8 : 1;
-      return state.fireRate * bonus;
+      return state.wand.fireRate * bonus;
     }
 
     function updateBuffTimers(delta) {
@@ -1051,10 +1069,10 @@
         ctx.globalAlpha = 1;
       });
 
-      state.bullets.forEach((bullet) => {
+      state.projectiles.forEach((projectile) => {
         ctx.fillStyle = "#6df3ff";
         ctx.beginPath();
-        ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+        ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -1091,15 +1109,9 @@
       const delta = ((timestamp - state.lastTime) / 1000) * state.speed;
       state.lastTime = timestamp;
       if (state.running) {
-        if (state.mouse.down) {
-          state.fireTimer -= delta;
-          if (state.fireTimer <= 0) {
-            shoot();
-            state.fireTimer = 1 / getEffectiveFireRate();
-          }
-        }
+        if (state.fireTimer > 0) state.fireTimer = Math.max(0, state.fireTimer - delta);
         updatePlayer(delta);
-        updateBullets(delta);
+        updateProjectiles(delta);
         updateEnemies(delta);
         updatePickups(delta);
         updateParticles(delta);
@@ -1124,6 +1136,7 @@
 
     canvas.addEventListener("mousedown", () => {
       state.mouse.down = true;
+      fireWand();
     });
 
     canvas.addEventListener("mouseup", () => {
@@ -1137,7 +1150,7 @@
         state.player.dashCooldown = state.player.dashCooldownMax || 0.8;
       }
       if (event.key === " ") {
-        shoot();
+        fireWand();
       }
       if (event.key.toLowerCase() === "e") {
         castBurst();
