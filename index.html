@@ -397,6 +397,177 @@
       { name: "Thermal Burst", text: "Pulse Burst deals +40% damage.", apply: () => { state.burstPower += 0.4; } }
     ];
 
+    function addShotAngles(context, angles) {
+      const combined = new Set(context.shots.map((shot) => shot.angleOffset));
+      angles.forEach((angle) => combined.add(angle));
+      context.shots = Array.from(combined).map((angleOffset) => ({ angleOffset }));
+    }
+
+    const runeCatalog = [
+      {
+        id: "double-shot",
+        name: "Double Shot",
+        cost: 3,
+        description: "Fire two projectiles with a slight divergence.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          addShotAngles(shotContext, [-0.08, 0.08]);
+        }
+      },
+      {
+        id: "zigzag-shot",
+        name: "Zig-Zag Shot",
+        cost: 4,
+        description: "Projectiles weave in a sine-wave trajectory.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.zigzag = true;
+          shotContext.waveAmplitude = Math.max(shotContext.waveAmplitude, 110);
+          shotContext.waveFrequency = Math.max(shotContext.waveFrequency, 10);
+        }
+      },
+      {
+        id: "triple-spread",
+        name: "Triple Spread",
+        cost: 4,
+        description: "Launch three wide-spread bolts per shot.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          addShotAngles(shotContext, [-0.22, 0, 0.22]);
+        }
+      },
+      {
+        id: "piercing-shot",
+        name: "Piercing Shot",
+        cost: 3,
+        description: "Projectiles pierce through extra enemies.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.pierce += 2;
+        }
+      },
+      {
+        id: "chain-lightning",
+        name: "Chain Lightning",
+        cost: 8,
+        description: "Hits jump to nearby enemies for bonus damage.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.chainJumps = Math.max(shotContext.chainJumps, 2);
+          shotContext.chainRange = Math.max(shotContext.chainRange, 170);
+          shotContext.chainDamage = Math.max(shotContext.chainDamage, 14);
+        }
+      },
+      {
+        id: "explosive-shot",
+        name: "Explosive Shot",
+        cost: 7,
+        description: "Impacts detonate in a damaging blast.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.explosiveRadius = Math.max(shotContext.explosiveRadius, 70);
+          shotContext.explosiveDamage = Math.max(shotContext.explosiveDamage, 12);
+        }
+      },
+      {
+        id: "homing-shot",
+        name: "Homing Shot",
+        cost: 6,
+        description: "Bolts drift toward the nearest target.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.homingStrength = Math.max(shotContext.homingStrength, 3.4);
+        }
+      },
+      {
+        id: "rapid-fire",
+        name: "Rapid-Fire",
+        cost: 5,
+        description: "Reduce cooldown between shots.",
+        effect: ({ type, stats }) => {
+          if (type !== "stats") return;
+          stats.fireRateMultiplier *= 1.35;
+        }
+      },
+      {
+        id: "slow-shot",
+        name: "Slow Shot",
+        cost: 3,
+        description: "Hits apply a brief slow.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.slowAmount = Math.max(shotContext.slowAmount, 0.35);
+          shotContext.slowDuration = Math.max(shotContext.slowDuration, 1.6);
+        }
+      },
+      {
+        id: "critical-shot",
+        name: "Critical Shot",
+        cost: 5,
+        description: "Chance to deal double damage on impact.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.critChance = Math.max(shotContext.critChance, 0.2);
+          shotContext.critMultiplier = Math.max(shotContext.critMultiplier, 2);
+        }
+      },
+      {
+        id: "split-shot",
+        name: "Split Shot",
+        cost: 6,
+        description: "Impacts split into two extra bolts.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.splitCount = Math.max(shotContext.splitCount, 2);
+        }
+      },
+      {
+        id: "laser-beam",
+        name: "Laser Beam",
+        cost: 9,
+        description: "Fire a continuous beam that shreds targets.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.laser = true;
+          shotContext.laserDps = Math.max(shotContext.laserDps, 90);
+          shotContext.laserLength = Math.max(shotContext.laserLength, 260);
+          shotContext.pierce += 99;
+          shotContext.life = Math.max(shotContext.life, 0.26);
+        }
+      },
+      {
+        id: "boomerang-shot",
+        name: "Boomerang Shot",
+        cost: 4,
+        description: "Projectiles reverse course mid-flight.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.boomerang = true;
+        }
+      },
+      {
+        id: "shielded-projectile",
+        name: "Shielded Projectile",
+        cost: 4,
+        description: "Shots ignore the first collision.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.shieldHits = Math.max(shotContext.shieldHits, 1);
+        }
+      },
+      {
+        id: "multi-burst",
+        name: "Multi-Burst",
+        cost: 7,
+        description: "Fire multiple times per trigger.",
+        effect: ({ type, shotContext }) => {
+          if (type !== "shot") return;
+          shotContext.multiBurstCount = Math.max(shotContext.multiBurstCount, 3);
+          shotContext.multiBurstDelay = Math.max(shotContext.multiBurstDelay, 0.08);
+        }
+      }
+    ];
+
     const enemyTypes = [
       { id: "drifter", name: "Drifter", hp: 22, speed: 70, color: "#6df3ff", score: 18 },
       { id: "crusher", name: "Crusher", hp: 60, speed: 45, color: "#ff7ad9", score: 36 },
@@ -433,6 +604,9 @@
       loopRegen: 0,
       pickupRange: 120,
       burstPower: 0,
+      activeRunes: [],
+      runeStats: { fireRateMultiplier: 1 },
+      pendingBursts: [],
       overdriveTimer: 0,
       shieldTimer: 0,
       magnetTimer: 0,
@@ -490,12 +664,142 @@
       if (state.overdriveTimer > 0) buffs.push(`Overdrive ${state.overdriveTimer.toFixed(1)}s`);
       if (state.shieldTimer > 0) buffs.push(`Shield ${state.shieldTimer.toFixed(1)}s`);
       if (state.magnetTimer > 0) buffs.push(`Magnet ${state.magnetTimer.toFixed(1)}s`);
+      if (state.activeRunes.length > 0) {
+        state.activeRunes.forEach((rune) => buffs.push(`Rune: ${rune.name}`));
+      }
       if (buffs.length === 0) buffs.push("No active buffs.");
       buffs.forEach((buff) => {
         const span = document.createElement("span");
         span.textContent = buff;
         ui.buffs.appendChild(span);
       });
+    }
+
+    function recalculateRuneStats() {
+      const stats = { fireRateMultiplier: 1 };
+      state.activeRunes.forEach((rune) => {
+        rune.effect({ type: "stats", stats, state });
+      });
+      state.runeStats = stats;
+    }
+
+    function applyRuneEffects(type, payload) {
+      state.activeRunes.forEach((rune) => {
+        rune.effect({ type, state, ...payload });
+      });
+    }
+
+    function addRune(rune) {
+      if (state.activeRunes.some((active) => active.id === rune.id)) {
+        showToast(`${rune.name} already active.`);
+        return;
+      }
+      state.activeRunes.push(rune);
+      recalculateRuneStats();
+      showToast(`Rune attuned: ${rune.name}`);
+    }
+
+    function buildShotContext(angle) {
+      return {
+        angle,
+        shots: [{ angleOffset: 0 }],
+        speed: 520,
+        damage: 18,
+        pierce: state.pierce,
+        life: 1.4,
+        zigzag: false,
+        waveAmplitude: 0,
+        waveFrequency: 0,
+        homingStrength: 0,
+        chainJumps: 0,
+        chainRange: 0,
+        chainDamage: 0,
+        explosiveRadius: 0,
+        explosiveDamage: 0,
+        slowAmount: 0,
+        slowDuration: 0,
+        critChance: 0,
+        critMultiplier: 0,
+        splitCount: 0,
+        laser: false,
+        laserDps: 0,
+        laserLength: 0,
+        boomerang: false,
+        shieldHits: 0,
+        multiBurstCount: 1,
+        multiBurstDelay: 0
+      };
+    }
+
+    function createBulletsFromContext(shotContext, originX, originY) {
+      shotContext.shots.forEach((shot) => {
+        const angle = shotContext.angle + shot.angleOffset;
+        const vx = Math.cos(angle) * shotContext.speed;
+        const vy = Math.sin(angle) * shotContext.speed;
+        state.bullets.push({
+          x: originX,
+          y: originY,
+          vx,
+          vy,
+          speed: shotContext.speed,
+          angle,
+          life: shotContext.life,
+          pierce: shotContext.pierce,
+          damage: shotContext.damage,
+          zigzag: shotContext.zigzag,
+          waveAmplitude: shotContext.waveAmplitude,
+          waveFrequency: shotContext.waveFrequency,
+          wavePhase: 0,
+          homingStrength: shotContext.homingStrength,
+          chainJumps: shotContext.chainJumps,
+          chainRange: shotContext.chainRange,
+          chainDamage: shotContext.chainDamage,
+          explosiveRadius: shotContext.explosiveRadius,
+          explosiveDamage: shotContext.explosiveDamage,
+          slowAmount: shotContext.slowAmount,
+          slowDuration: shotContext.slowDuration,
+          critChance: shotContext.critChance,
+          critMultiplier: shotContext.critMultiplier,
+          splitCount: shotContext.splitCount,
+          splitUsed: false,
+          laser: shotContext.laser,
+          laserDps: shotContext.laserDps,
+          laserLength: shotContext.laserLength,
+          boomerang: shotContext.boomerang,
+          boomerangTimer: shotContext.boomerang ? 0.55 : 0,
+          boomerangReturned: false,
+          shieldHits: shotContext.shieldHits
+        });
+      });
+    }
+
+    function updatePendingBursts(delta) {
+      state.pendingBursts.forEach((burst) => {
+        burst.timer -= delta;
+        if (burst.timer <= 0) {
+          createBulletsFromContext(burst.context, burst.x, burst.y);
+          burst.done = true;
+        }
+      });
+      state.pendingBursts = state.pendingBursts.filter((burst) => !burst.done);
+    }
+
+    function applyChainLightning(sourceEnemy, bullet) {
+      let current = sourceEnemy;
+      let jumps = bullet.chainJumps;
+      while (jumps > 0) {
+        const target = state.enemies
+          .filter((enemy) => enemy !== current && enemy.hp > 0)
+          .sort(
+            (a, b) =>
+              Math.hypot(a.x - current.x, a.y - current.y) - Math.hypot(b.x - current.x, b.y - current.y)
+          )[0];
+        if (!target || Math.hypot(target.x - current.x, target.y - current.y) > bullet.chainRange) break;
+        target.hp -= bullet.chainDamage;
+        target.hitTimer = 0.2;
+        current = target;
+        jumps -= 1;
+      }
     }
 
     function resetRun() {
@@ -516,6 +820,9 @@
       state.loopRegen = 0;
       state.pickupRange = 120;
       state.burstPower = 0;
+      state.activeRunes = [];
+      state.runeStats = { fireRateMultiplier: 1 };
+      state.pendingBursts = [];
       state.overdriveTimer = 0;
       state.shieldTimer = 0;
       state.magnetTimer = 0;
@@ -589,12 +896,21 @@
 
     function spawnCardOptions() {
       ui.cardOptions.innerHTML = "";
-      const choices = [...cardCatalog].sort(() => 0.5 - Math.random()).slice(0, 3);
+      const availableRunes = runeCatalog.filter((rune) => !state.activeRunes.some((active) => active.id === rune.id));
+      const choices = [...cardCatalog, ...availableRunes].sort(() => 0.5 - Math.random()).slice(0, 3);
       choices.forEach((card) => {
         const button = document.createElement("button");
-        button.textContent = `${card.name} — ${card.text}`;
+        if (card.effect) {
+          button.textContent = `${card.name} — ${card.description} (Cost ${card.cost})`;
+        } else {
+          button.textContent = `${card.name} — ${card.text}`;
+        }
         button.addEventListener("click", () => {
-          card.apply();
+          if (card.effect) {
+            addRune(card);
+          } else {
+            card.apply();
+          }
           ui.cardOptions.innerHTML = "";
           ui.loadout.textContent = `Active card: ${card.name}`;
           showToast(`Card equipped: ${card.name}`);
@@ -634,7 +950,9 @@
         hp: type.hp * hpScale,
         maxHp: type.hp * hpScale,
         speed: type.speed * speedScale,
-        hitTimer: 0
+        hitTimer: 0,
+        slowTimer: 0,
+        slowFactor: 0
       });
     }
 
@@ -650,7 +968,9 @@
         maxHp: type.hp * hpScale,
         speed: type.speed,
         boss: true,
-        hitTimer: 0
+        hitTimer: 0,
+        slowTimer: 0,
+        slowFactor: 0
       });
       showToast("Loop boss incoming! Clear it for extra chips.");
     }
@@ -659,17 +979,20 @@
       if (state.player.energy <= 0) return;
       const dx = state.mouse.x - state.player.x;
       const dy = state.mouse.y - state.player.y;
-      const dist = Math.hypot(dx, dy) || 1;
       const angle = Math.atan2(dy, dx);
-      const speed = 520;
-      state.bullets.push({
-        x: state.player.x,
-        y: state.player.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 1.4,
-        pierce: state.pierce
-      });
+      const shotContext = buildShotContext(angle);
+      applyRuneEffects("shot", { shotContext });
+      createBulletsFromContext(shotContext, state.player.x, state.player.y);
+      if (shotContext.multiBurstCount > 1) {
+        for (let i = 1; i < shotContext.multiBurstCount; i += 1) {
+          state.pendingBursts.push({
+            timer: shotContext.multiBurstDelay * i,
+            x: state.player.x,
+            y: state.player.y,
+            context: { ...shotContext }
+          });
+        }
+      }
       state.player.energy = Math.max(0, state.player.energy - 1.2);
       spawnParticles(state.player.x, state.player.y, "#6df3ff");
     }
@@ -738,8 +1061,46 @@
 
     function updateBullets(delta) {
       state.bullets.forEach((bullet) => {
-        bullet.x += bullet.vx * delta;
-        bullet.y += bullet.vy * delta;
+        if (bullet.laser) {
+          bullet.x = state.player.x;
+          bullet.y = state.player.y;
+          bullet.angle = Math.atan2(state.mouse.y - state.player.y, state.mouse.x - state.player.x);
+          bullet.life -= delta;
+          return;
+        }
+        if (bullet.homingStrength > 0 && state.enemies.length > 0) {
+          const target = state.enemies
+            .filter((enemy) => enemy.hp > 0)
+            .sort(
+              (a, b) =>
+                Math.hypot(a.x - bullet.x, a.y - bullet.y) - Math.hypot(b.x - bullet.x, b.y - bullet.y)
+            )[0];
+          if (target) {
+            const tx = target.x - bullet.x;
+            const ty = target.y - bullet.y;
+            const dist = Math.hypot(tx, ty) || 1;
+            const desiredVx = (tx / dist) * bullet.speed;
+            const desiredVy = (ty / dist) * bullet.speed;
+            const turnRate = Math.min(1, bullet.homingStrength * delta);
+            bullet.vx += (desiredVx - bullet.vx) * turnRate;
+            bullet.vy += (desiredVy - bullet.vy) * turnRate;
+          }
+        }
+        if (bullet.boomerang && bullet.boomerangTimer > 0) {
+          bullet.boomerangTimer -= delta;
+          if (bullet.boomerangTimer <= 0 && !bullet.boomerangReturned) {
+            bullet.vx *= -1;
+            bullet.vy *= -1;
+            bullet.boomerangReturned = true;
+          }
+        }
+        bullet.wavePhase += delta * bullet.waveFrequency;
+        const waveOffset = bullet.zigzag ? Math.sin(bullet.wavePhase) * bullet.waveAmplitude : 0;
+        const velocityLength = Math.hypot(bullet.vx, bullet.vy) || 1;
+        const nx = -bullet.vy / velocityLength;
+        const ny = bullet.vx / velocityLength;
+        bullet.x += bullet.vx * delta + nx * waveOffset * delta;
+        bullet.y += bullet.vy * delta + ny * waveOffset * delta;
         bullet.life -= delta;
       });
       state.bullets = state.bullets.filter((bullet) => bullet.life > 0);
@@ -750,9 +1111,11 @@
         const dx = state.player.x - enemy.x;
         const dy = state.player.y - enemy.y;
         const dist = Math.hypot(dx, dy) || 1;
-        enemy.x += (dx / dist) * enemy.speed * delta;
-        enemy.y += (dy / dist) * enemy.speed * delta;
+        const slowFactor = enemy.slowTimer > 0 ? 1 - enemy.slowFactor : 1;
+        enemy.x += (dx / dist) * enemy.speed * slowFactor * delta;
+        enemy.y += (dy / dist) * enemy.speed * slowFactor * delta;
         if (enemy.hitTimer > 0) enemy.hitTimer -= delta;
+        if (enemy.slowTimer > 0) enemy.slowTimer = Math.max(0, enemy.slowTimer - delta);
       });
     }
 
@@ -854,16 +1217,73 @@
       state.particles = state.particles.filter((particle) => particle.life > 0);
     }
 
-    function handleCollisions() {
+    function handleCollisions(delta) {
       state.bullets.forEach((bullet) => {
         state.enemies.forEach((enemy) => {
           if (enemy.hp <= 0) return;
+          if (bullet.laser) {
+            const dx = enemy.x - bullet.x;
+            const dy = enemy.y - bullet.y;
+            const endX = bullet.x + Math.cos(bullet.angle) * bullet.laserLength;
+            const endY = bullet.y + Math.sin(bullet.angle) * bullet.laserLength;
+            const lineDx = endX - bullet.x;
+            const lineDy = endY - bullet.y;
+            const t = Math.max(
+              0,
+              Math.min(1, (dx * lineDx + dy * lineDy) / (lineDx * lineDx + lineDy * lineDy))
+            );
+            const closestX = bullet.x + lineDx * t;
+            const closestY = bullet.y + lineDy * t;
+            const dist = Math.hypot(enemy.x - closestX, enemy.y - closestY);
+            if (dist < (enemy.boss ? 20 : 14)) {
+              enemy.hp -= bullet.laserDps * delta;
+              enemy.hitTimer = 0.1;
+              state.combo.timer = 3;
+            }
+            return;
+          }
           const dist = Math.hypot(enemy.x - bullet.x, enemy.y - bullet.y);
           if (dist < 18) {
-            enemy.hp -= 18;
+            let damage = bullet.damage;
+            if (bullet.critChance > 0 && Math.random() < bullet.critChance) {
+              damage *= bullet.critMultiplier || 2;
+              spawnParticles(enemy.x, enemy.y, "#ff7ad9", 12);
+            }
+            enemy.hp -= damage;
             enemy.hitTimer = 0.2;
-            bullet.pierce -= 1;
-            if (bullet.pierce < 0) bullet.life = 0;
+            if (bullet.explosiveRadius > 0) {
+              state.enemies.forEach((other) => {
+                if (other.hp <= 0 || other === enemy) return;
+                const blastDist = Math.hypot(other.x - enemy.x, other.y - enemy.y);
+                if (blastDist < bullet.explosiveRadius) {
+                  other.hp -= bullet.explosiveDamage;
+                  other.hitTimer = 0.2;
+                }
+              });
+              spawnParticles(enemy.x, enemy.y, "#ff6b6b", 26);
+            }
+            if (bullet.chainJumps > 0) {
+              applyChainLightning(enemy, bullet);
+            }
+            if (bullet.slowAmount > 0) {
+              enemy.slowFactor = Math.max(enemy.slowFactor, bullet.slowAmount);
+              enemy.slowTimer = Math.max(enemy.slowTimer, bullet.slowDuration);
+            }
+            if (bullet.splitCount > 0 && !bullet.splitUsed) {
+              bullet.splitUsed = true;
+              const splitAngle = Math.atan2(bullet.vy, bullet.vx);
+              const splitContext = buildShotContext(splitAngle);
+              splitContext.shots = [{ angleOffset: -0.25 }, { angleOffset: 0.25 }];
+              splitContext.speed = bullet.speed * 0.9;
+              splitContext.damage = bullet.damage * 0.6;
+              createBulletsFromContext(splitContext, enemy.x, enemy.y);
+            }
+            if (bullet.shieldHits > 0) {
+              bullet.shieldHits -= 1;
+            } else {
+              bullet.pierce -= 1;
+              if (bullet.pierce < 0) bullet.life = 0;
+            }
             if (state.chain > 0) {
               const target = state.enemies
                 .filter((other) => other !== enemy && other.hp > 0)
@@ -920,7 +1340,7 @@
 
     function getEffectiveFireRate() {
       const bonus = state.overdriveTimer > 0 ? 1.8 : 1;
-      return state.fireRate * bonus;
+      return state.fireRate * bonus * state.runeStats.fireRateMultiplier;
     }
 
     function updateBuffTimers(delta) {
@@ -1052,7 +1472,20 @@
       });
 
       state.bullets.forEach((bullet) => {
-        ctx.fillStyle = "#6df3ff";
+        if (bullet.laser) {
+          ctx.strokeStyle = "rgba(109,243,255,0.8)";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(bullet.x, bullet.y);
+          ctx.lineTo(
+            bullet.x + Math.cos(bullet.angle) * bullet.laserLength,
+            bullet.y + Math.sin(bullet.angle) * bullet.laserLength
+          );
+          ctx.stroke();
+          ctx.lineWidth = 1;
+          return;
+        }
+        ctx.fillStyle = bullet.shieldHits > 0 ? "#8b8bff" : "#6df3ff";
         ctx.beginPath();
         ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
         ctx.fill();
@@ -1099,13 +1532,14 @@
           }
         }
         updatePlayer(delta);
+        updatePendingBursts(delta);
         updateBullets(delta);
         updateEnemies(delta);
         updatePickups(delta);
         updateParticles(delta);
         updateHazards(delta);
         updateBuffTimers(delta);
-        handleCollisions();
+        handleCollisions(delta);
         handleEnemyDeaths();
         updateCombo(delta);
         updateSpawns(delta);
