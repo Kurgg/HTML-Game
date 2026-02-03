@@ -219,6 +219,76 @@
       display: block;
     }
 
+    .shop-overlay {
+      position: absolute;
+      inset: 16px;
+      background: rgba(5, 7, 16, 0.94);
+      border: 1px solid rgba(109, 243, 255, 0.2);
+      border-radius: 16px;
+      padding: 18px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 5;
+    }
+
+    .shop-overlay.show {
+      display: flex;
+    }
+
+    .shop-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shop-header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .shop-runes {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+    }
+
+    .rune-card {
+      background: rgba(16, 22, 38, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rune-card h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .rune-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .rune-status {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .rune-card.active {
+      border-color: rgba(109, 243, 255, 0.6);
+      box-shadow: 0 0 0 1px rgba(109, 243, 255, 0.4);
+    }
+
     footer {
       padding: 0 32px 24px;
       color: var(--muted);
@@ -252,6 +322,21 @@
     <div class="panel" id="game-wrap">
       <canvas id="arena" width="960" height="540"></canvas>
       <div class="toast" id="toast"></div>
+      <div class="shop-overlay" id="shop-overlay" aria-hidden="true">
+        <div class="shop-header">
+          <div>
+            <h3>Rune Shop</h3>
+            <p>Spend rune shards earned from kills to bind one rune to your wand.</p>
+          </div>
+          <div>
+            <div class="stat">
+              <span>Rune Shards</span>
+              <strong id="rune-currency">0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="shop-runes" id="rune-list"></div>
+      </div>
     </div>
     <div class="column">
       <div class="panel">
@@ -290,6 +375,10 @@
           <div class="stat">
             <span>Meta Chips</span>
             <strong id="chips">0</strong>
+          </div>
+          <div class="stat">
+            <span>Rune Shards</span>
+            <strong id="rune-shards">0</strong>
           </div>
           <div class="stat">
             <span>Threat</span>
@@ -337,6 +426,7 @@
           <span>Click / Space: Fire</span>
           <span>Shift: Dash</span>
           <span>E: Pulse Burst</span>
+          <span>S: Rune Shop</span>
         </div>
       </div>
     </div>
@@ -369,6 +459,10 @@
       tips: document.getElementById("tips"),
       buffs: document.getElementById("buffs"),
       toast: document.getElementById("toast"),
+      shopOverlay: document.getElementById("shop-overlay"),
+      runeList: document.getElementById("rune-list"),
+      runeCurrency: document.getElementById("rune-currency"),
+      runeShards: document.getElementById("rune-shards"),
       startRun: document.getElementById("start-run"),
       pause: document.getElementById("toggle-pause"),
       speed: document.getElementById("toggle-speed"),
@@ -397,6 +491,49 @@
       { name: "Thermal Burst", text: "Pulse Burst deals +40% damage.", apply: () => { state.burstPower += 0.4; } }
     ];
 
+    const runeCatalog = [
+      {
+        id: "voltaic-thread",
+        name: "Voltaic Thread",
+        cost: 18,
+        text: "Wand shots gain +20% fire rate and +1 chain bounce.",
+        apply: () => {
+          state.fireRate *= 1.2;
+          state.chain += 1;
+        }
+      },
+      {
+        id: "shard-splitter",
+        name: "Shard Splitter",
+        cost: 16,
+        text: "Shots pierce +1 and deal +10% damage.",
+        apply: () => {
+          state.pierce += 1;
+          state.bulletDamage *= 1.1;
+        }
+      },
+      {
+        id: "nova-rune",
+        name: "Nova Rune",
+        cost: 22,
+        text: "Pulse Burst costs -10 energy and hits +30% harder.",
+        apply: () => {
+          state.burstPower += 0.3;
+          state.burstCost = Math.max(20, state.burstCost - 10);
+        }
+      },
+      {
+        id: "echo-lens",
+        name: "Echo Lens",
+        cost: 14,
+        text: "Projectiles travel faster and your pickup field widens.",
+        apply: () => {
+          state.bulletSpeed *= 1.15;
+          state.pickupRange += 40;
+        }
+      }
+    ];
+
     const enemyTypes = [
       { id: "drifter", name: "Drifter", hp: 22, speed: 70, color: "#6df3ff", score: 18 },
       { id: "crusher", name: "Crusher", hp: 60, speed: 45, color: "#ff7ad9", score: 36 },
@@ -411,6 +548,10 @@
       score: 0,
       best: Number(localStorage.getItem("neon-loop-best") || 0),
       chips: Number(localStorage.getItem("neon-loop-chips") || 0),
+      runeShards: 0,
+      activeRune: null,
+      shopOpen: false,
+      shopWasRunning: false,
       loop: 0,
       difficulty: 1,
       threat: 1,
@@ -428,11 +569,14 @@
         dashTimer: 0
       },
       fireRate: 7,
+      bulletDamage: 18,
+      bulletSpeed: 520,
       chain: 0,
       pierce: 0,
       loopRegen: 0,
       pickupRange: 120,
       burstPower: 0,
+      burstCost: 40,
       overdriveTimer: 0,
       shieldTimer: 0,
       magnetTimer: 0,
@@ -469,9 +613,11 @@
       ui.difficulty.textContent = state.difficulty.toFixed(1);
       ui.best.textContent = state.best;
       ui.chips.textContent = state.chips;
+      ui.runeShards.textContent = state.runeShards;
       ui.threat.textContent = state.threat.toFixed(1);
       ui.overdrive.textContent = state.overdriveTimer > 0 ? `${state.overdriveTimer.toFixed(1)}s` : "0";
       ui.overdriveBar.style.width = `${Math.min(100, (state.overdriveTimer / 6) * 100)}%`;
+      ui.burst.textContent = `Pulse Burst (${Math.round(state.burstCost)} energy)`;
       renderBuffs();
     }
 
@@ -498,6 +644,50 @@
       });
     }
 
+    function updateShopOverlay() {
+      ui.shopOverlay.classList.toggle("show", state.shopOpen);
+      ui.shopOverlay.setAttribute("aria-hidden", state.shopOpen ? "false" : "true");
+      ui.runeCurrency.textContent = state.runeShards;
+      ui.runeList.innerHTML = "";
+      runeCatalog.forEach((rune) => {
+        const card = document.createElement("div");
+        card.className = "rune-card";
+        if (state.activeRune && state.activeRune.id === rune.id) {
+          card.classList.add("active");
+        }
+
+        const content = document.createElement("div");
+        const title = document.createElement("h4");
+        title.textContent = rune.name;
+        const desc = document.createElement("p");
+        desc.textContent = rune.text;
+        const status = document.createElement("div");
+        status.className = "rune-status";
+        status.textContent = state.activeRune?.id === rune.id ? "Bound" : `Cost ${rune.cost}`;
+        content.appendChild(title);
+        content.appendChild(desc);
+        content.appendChild(status);
+
+        const button = document.createElement("button");
+        button.textContent = state.activeRune?.id === rune.id ? "Active" : "Bind Rune";
+        const canAfford = state.runeShards >= rune.cost;
+        const canBuy = !state.activeRune && canAfford;
+        button.disabled = !canBuy;
+        button.addEventListener("click", () => {
+          if (state.activeRune || state.runeShards < rune.cost) return;
+          state.runeShards -= rune.cost;
+          rune.apply();
+          state.activeRune = rune;
+          showToast(`Rune bound: ${rune.name}`);
+          updateShopOverlay();
+        });
+
+        card.appendChild(content);
+        card.appendChild(button);
+        ui.runeList.appendChild(card);
+      });
+    }
+
     function resetRun() {
       state.score = 0;
       state.loop = 0;
@@ -511,14 +701,21 @@
       state.player.dashCooldown = 0;
       state.player.dashTimer = 0;
       state.fireRate = 7;
+      state.bulletDamage = 18;
+      state.bulletSpeed = 520;
       state.chain = 0;
       state.pierce = 0;
       state.loopRegen = 0;
       state.pickupRange = 120;
       state.burstPower = 0;
+      state.burstCost = 40;
       state.overdriveTimer = 0;
       state.shieldTimer = 0;
       state.magnetTimer = 0;
+      state.runeShards = 0;
+      state.activeRune = null;
+      state.shopOpen = false;
+      state.shopWasRunning = false;
       state.bullets = [];
       state.enemies = [];
       state.pickups = [];
@@ -531,6 +728,7 @@
       state.fireTimer = 0;
       ui.cardOptions.innerHTML = "";
       ui.loadout.textContent = "Pick a card between loops to evolve your build.";
+      updateShopOverlay();
       showToast("Loop initialized. Survive the surge!");
     }
 
@@ -661,12 +859,11 @@
       const dy = state.mouse.y - state.player.y;
       const dist = Math.hypot(dx, dy) || 1;
       const angle = Math.atan2(dy, dx);
-      const speed = 520;
       state.bullets.push({
         x: state.player.x,
         y: state.player.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
+        vx: Math.cos(angle) * state.bulletSpeed,
+        vy: Math.sin(angle) * state.bulletSpeed,
         life: 1.4,
         pierce: state.pierce
       });
@@ -675,8 +872,8 @@
     }
 
     function castBurst() {
-      if (state.player.energy < 40) return;
-      state.player.energy -= 40;
+      if (state.player.energy < state.burstCost) return;
+      state.player.energy -= state.burstCost;
       const power = 35 * (1 + state.burstPower);
       state.enemies.forEach((enemy) => {
         enemy.hp -= power;
@@ -860,7 +1057,7 @@
           if (enemy.hp <= 0) return;
           const dist = Math.hypot(enemy.x - bullet.x, enemy.y - bullet.y);
           if (dist < 18) {
-            enemy.hp -= 18;
+            enemy.hp -= state.bulletDamage;
             enemy.hitTimer = 0.2;
             bullet.pierce -= 1;
             if (bullet.pierce < 0) bullet.life = 0;
@@ -918,6 +1115,19 @@
       });
     }
 
+    function toggleShop() {
+      state.shopOpen = !state.shopOpen;
+      if (state.shopOpen) {
+        state.shopWasRunning = state.running;
+        state.running = false;
+        ui.pause.textContent = "Resume";
+      } else if (state.shopWasRunning) {
+        state.running = true;
+        ui.pause.textContent = "Pause";
+      }
+      updateShopOverlay();
+    }
+
     function getEffectiveFireRate() {
       const bonus = state.overdriveTimer > 0 ? 1.8 : 1;
       return state.fireRate * bonus;
@@ -936,6 +1146,7 @@
           enemy.dead = true;
           state.score += enemy.type.score * (1 + state.combo.count * 0.1);
           state.combo.count += 1;
+          state.runeShards += enemy.boss ? 6 : 2;
           spawnParticles(enemy.x, enemy.y, enemy.type.color, enemy.boss ? 40 : 18);
           if (Math.random() < 0.35) {
             spawnPickup(enemy.x, enemy.y, enemy.boss ? 12 : 5, "chip");
@@ -949,6 +1160,9 @@
         }
       });
       state.enemies = state.enemies.filter((enemy) => enemy.hp > 0);
+      if (state.shopOpen) {
+        updateShopOverlay();
+      }
     }
 
     function updateCombo(delta) {
@@ -1131,6 +1345,12 @@
     });
 
     document.addEventListener("keydown", (event) => {
+      if (event.key.toLowerCase() === "s" && !event.repeat) {
+        toggleShop();
+      }
+      if (state.shopOpen && event.key.toLowerCase() !== "s") {
+        return;
+      }
       state.keys[event.key] = true;
       if (event.key === "Shift" && state.player.dashCooldown <= 0) {
         state.player.dashTimer = 0.25;
@@ -1169,6 +1389,7 @@
     renderBuffs();
     updateUI();
     updateMetaButtons();
+    updateShopOverlay();
     requestAnimationFrame(loop);
   </script>
 </body>
